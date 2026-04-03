@@ -1,0 +1,29 @@
+---
+default_language_version:
+    python: python3
+fail_fast: false
+minimum_pre_commit_version: 4.1.0
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: f1dff44d3a9ae852957f34def96390f28719c232
+      hooks:
+          - id: check-json
+          - id: check-yaml
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: detect-private-key
+          - id: no-commit-to-branch
+            args: [--branch, main]
+    - repo: https://github.com/igorshubovych/markdownlint-cli
+      rev: f7ed74202ac8ec26bab4a68359556c5243df142f
+      hooks:
+          - id: markdownlint
+            args: [--fix]
+            stages: [manual]
+    - repo: https://github.com/chrysa/pre-commit-tools
+      rev: 78d8bd3118110cc9095fcd61eb4772061c3ab628
+      hooks:
+          - id: yaml-sorter
+            exclude: ^\.github/
+          - id: json-sorter
+          - id: env-file-check
