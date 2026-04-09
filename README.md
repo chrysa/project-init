@@ -1,12 +1,12 @@
 # project-init
 
-> **Project bootstrap and initializer for the chrysa ecosystem.**
+> **Project bootstrap and initializer for the ecosystem.**
 
 `project-init` rationalizes project creation, enforces standards from day one, and automates the repetitive setup work that every new repository needs.
 
 ## Purpose
 
-Every new project in the chrysa ecosystem needs the same set of things:
+Every new project in the ecosystem needs the same set of things:
 - CI/CD pipeline (GitHub Actions)
 - Pre-commit hooks
 - Makefile
