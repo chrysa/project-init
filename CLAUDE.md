@@ -1,8 +1,10 @@
 # CLAUDE.md — project-init
 
+> @[claude-sonnet-4-6]
+
 ## Project Overview
 
-`project-init` is the **project bootstrap and initializer** for the chrysa ecosystem.
+`project-init` is the **project bootstrap and initializer** for the ecosystem.
 
 Its purpose is to automate repetitive, error-prone project setup work so every new repository starts
 with standards enforced, CI wired, pre-commit configured, Claude Code integrated, and documentation
