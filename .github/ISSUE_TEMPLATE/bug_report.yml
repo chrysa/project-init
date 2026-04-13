@@ -6,6 +6,9 @@ labels: ['bug']
 assignees: ''
 ---
 
+## Severity
+<!-- Select one: Critical | High | Medium | Low -->
+
 ## Description
 <!-- A clear and concise description of the bug -->
 
@@ -21,8 +24,12 @@ assignees: ''
 <!-- What actually happened? -->
 
 ## Environment
-- OS: 
+- OS:
 - Python/Node version:
 - Relevant versions:
 
 ## Additional context
+<!-- Logs, screenshots, SonarCloud findings, etc. -->
+
+## Next step
+<!-- Create a PR with `Closes #<this issue number>` once the fix is ready -->
