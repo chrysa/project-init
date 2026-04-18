@@ -2,49 +2,38 @@
 
 > @[claude-sonnet-4-6]
 
-## Project Overview
+## Project
 
-`project-init` is the **project bootstrap and initializer** for the ecosystem.
+**Name:** project-init
+**Stack:** Mixed / to document
+**Purpose:** `project-init` rationalizes project creation, enforces standards from day one, and automates the repetitive setup work that every new repository needs.
 
-Its purpose is to automate repetitive, error-prone project setup work so every new repository starts
-with standards enforced, CI wired, pre-commit configured, Claude Code integrated, and documentation
-ready from day one.
+## Working Rules
 
-## Repository Structure
+- Language: English for code, comments, docs, issues and PRs.
+- Commits: Conventional Commits (`type(scope): description`).
+- Prefer repository make targets when a Makefile is available.
+- Read `.github/instructions/*.instructions.md` when present before starting task-specific work.
 
-```
-project-init/
-├── README.md        # Overview and issue index
-├── CLAUDE.md        # This file
-├── src/             # Initializer source code (to be created)
-├── templates/       # Project templates by type (to be created)
-├── docs/            # Design decisions and specs (to be created)
-└── tests/           # Test suite (to be created)
-```
+## Claude Compatibility
 
-## Stack (planned)
+- Claude Code hooks are configured in `.claude/settings.json`.
+- Shared hooks, thresholds and skills are vendored from `chrysa/shared-standards` into this repository.
+- Keep repository-specific overrides in this file and keep generic automation in `.claude/`.
 
-- **Bootstrap engine**: Python CLI (or Node.js — see issue #1)
-- **Templates**: Jinja2 / Mustache (to be evaluated)
-- **Standards source**: chrysa/shared-standards
-- **CI**: chrysa/github-actions
-- **Hooks**: chrysa/pre-commit-tools
+## Read Order
 
-## Design Principles
+1. `~/.claude/CLAUDE.md` (private user preferences)
+2. `CLAUDE.md` (this repository)
+3. `.github/copilot-instructions.md`
+4. `.github/instructions/*.instructions.md` when present
 
-- Enforce standards by default, not as opt-in
-- Every generated project must be CI-ready and pre-commit-ready from the first commit
-- Minimize drift between project types
-- Integrate Claude Code hooks from day one (from chrysa/shared-standards)
-- Support Notion bootstrap when relevant
-- Never hardcode — use configuration and shared templates
+## Available Skills
 
-## Working Conventions
-
-- All code, docs, issues, PRs, and generated content in **English**
-- Python 3.14 target, backward-compatible to 3.12
-- Tests required for all template generation logic
-- SonarQube in CI only (no `sonar-project.properties`)
+Local Claude skills in `.claude/skills/`:
+- `testing-pytest` for Python test work
+- `dockerfile-multistage` for Dockerfile authoring
+- `api-design` for REST and FastAPI/API design tasks
 
 ## Execution Standard
 
@@ -59,22 +48,7 @@ Key requirements enforced at generation time:
 
 Deviations from the standard require a documented ADR.
 
-## Key Related Issues
+## Repository Notes
 
-| Issue | Topic |
-|-------|-------|
-| #1    | Architecture and design |
-| #2    | CI bootstrap |
-| #3    | Pre-commit bootstrap |
-| #4    | Claude Code bootstrap |
-| #5    | GitHub bootstrap |
-| #6    | Makefile bootstrap |
-| #7    | VS Code bootstrap |
-| #8    | Notion bootstrap |
-| #9    | Roadmap |
-
-## Related Repositories
-
-- `chrysa/shared-standards` — source of Claude hooks, Copilot instructions, templates
-- `Forge-Stack-Workshop/base-makefile` — Makefile.python and other Makefile templates
-- `chrysa/github-actions` — reusable CI actions
+- Add repository-specific architecture, operational constraints, or domain rules here when needed.
+- If this repository needs extra Claude skills, add them under `.claude/skills/`.
