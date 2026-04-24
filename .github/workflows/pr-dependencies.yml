@@ -1,39 +1,32 @@
----
-# Source : chrysa/shared-standards/templates/workflows-process/
-# Bloque PR si dépendance (via Depends-on: #N dans description)
-name: Check PR dependencies
-
-run-name: ${{ github.workflow }} by ${{ github.actor }}
-
-permissions:
-    contents: read
-    pull-requests: write
-
-on:
-    pull_request:
-        types:
-            - auto_merge_enabled
-            - opened
-            - ready_for_review
-            - reopened
-            - synchronize
-        branches-ignore:
-            - develop
-            - master
-            - main
-    schedule:
-        - cron: 0 0 * * *
-    workflow_call:
-    workflow_dispatch:
-
+true:
+  pull_request:
+    branches-ignore:
+    - develop
+    - main
+    - master
+    types:
+    - auto_merge_enabled
+    - opened
+    - ready_for_review
+    - reopened
+    - synchronize
+  schedule:
+  - cron: 0 0 * * *
+  workflow_call: null
+  workflow_dispatch: null
 jobs:
-    check_dependencies:
-        runs-on: ubuntu-latest
-        name: Check Dependencies
-        steps:
-            - uses: gregsdennis/dependencies-action@v1.4.2
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            - uses: Levi-Lesches/blocking-issues@2eeffdc6b055341f635eb0f3e4aea671516a61dc # v2
-              with:
-                  use-label: Blocked
+  check_dependencies:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+    steps:
+    - env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: gregsdennis/dependencies-action@v1.4.2
+    - uses: Levi-Lesches/blocking-issues@2eeffdc6b055341f635eb0f3e4aea671516a61dc
+      with:
+        use-label: Blocked
+name: Check PR dependencies
+permissions:
+  contents: read
+  pull-requests: write
+run-name: ${{ github.workflow }} by ${{ github.actor }}

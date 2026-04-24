@@ -1,35 +1,28 @@
----
-# Source : chrysa/shared-standards/templates/workflows-process/
-# Lint des workflows GitHub Actions via actionlint
-name: Actionlint
-
-on:
-    pull_request:
-        paths:
-            - '.github/workflows/**'
-            - '.github/actionlint.yaml'
-    push:
-        branches:
-            - develop
-            - main
-            - master
-        paths:
-            - '.github/workflows/**'
-
-permissions:
-    contents: read
-
+true:
+  pull_request:
+    paths:
+    - .github/actionlint.yaml
+    - .github/workflows/**
+  push:
+    branches:
+    - develop
+    - main
+    - master
+    paths:
+    - .github/workflows/**
 jobs:
-    actionlint:
-        name: Lint workflows
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-              with:
-                  persist-credentials: false
-
-            - name: Run actionlint
-              uses: raven-actions/actionlint@3a24062651993d40fed1019b58ac6fbdfbf276cc # v2
-              with:
-                  matcher: true
+  actionlint:
+    name: Lint workflows
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        persist-credentials: false
+    - name: Run actionlint
+      uses: raven-actions/actionlint@3a24062651993d40fed1019b58ac6fbdfbf276cc
+      with:
+        matcher: true
+name: Actionlint
+permissions:
+  contents: read
