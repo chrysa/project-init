@@ -3,9 +3,9 @@ name: SonarCloud Analysis
 
 on:
     push:
-        branches: [main, master, develop]
+        branches: [ main, master, develop ]
     pull_request:
-        types: [opened, synchronize, reopened]
+        types: [ opened, synchronize, reopened ]
 
 permissions:
     contents: read
@@ -14,7 +14,8 @@ permissions:
 jobs:
     sonar:
         name: SonarCloud scan
-        if: ${{ github.event_name != 'pull_request' || github.actor != 'dependabot[bot]' }}
+        if: ${{ github.event_name != 'pull_request' || github.actor != 'dependabot[bot]'
+            }}
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
@@ -27,9 +28,8 @@ jobs:
                   args: >
                       -Dsonar.projectKey=chrysa_project-init
                       -Dsonar.organization=chrysa
-                      -Dsonar.projectName=project-init
-                      -Dsonar.sources=.
-                      -Dsonar.exclusions=**/.git/**,**/reports/**,**/.vscode/**,**/node_modules/**,**/.github/workflows/**
+                      -Dsonar.projectName=project-init -Dsonar.sources=.
+                      -Dsonar.exclusions=**/.git/**,**/reports/**,**/.vscode/**,**/node_modules/**
                       -Dsonar.sourceEncoding=UTF-8
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

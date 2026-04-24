@@ -1,9 +1,9 @@
 ---
-# Source : chrysa/shared-standards/templates/workflows-process/
-# Label Size/XS|S|M|L|XL|XXL selon nombre de lignes modifiées
 name: Label Pull Request Size
 
-on: pull_request_target # zizmor: ignore[dangerous-triggers] — no PR code is checked out
+on:
+    pull_request:
+        types: [opened, reopened, synchronize]
 
 permissions:
     contents: read
@@ -12,11 +12,10 @@ permissions:
 jobs:
     size-label:
         runs-on: ubuntu-latest
+        name: Label PR by size
         steps:
             - name: Label pull request by size
-              uses: pascalgn/size-label-action@56b489b027932ec0cf60438a1a5f1a19c8fc71ff # v0.5.7
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              uses: codelytv/pr-size-labeler@v1
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   xs_max_size: 20

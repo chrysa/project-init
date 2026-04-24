@@ -1,0 +1,12 @@
+# actionlint config · shellcheck rules + extra rules
+# Source : shared-standards/templates/github-config/actionlint.yaml
+
+self-hosted-runner:
+    # Runners auto-hébergés acceptés (chrysa utilise surtout ubuntu-latest)
+    labels:
+        - ubuntu-latest
+        - ubuntu-22.04
+        - ubuntu-24.04
+
+config-variables:
+    - GITHUB_TOKEN

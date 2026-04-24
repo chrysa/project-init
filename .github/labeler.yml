@@ -1,45 +1,162 @@
-# Auto-labeling rules for pull requests
-# See: https://github.com/actions/labeler
+---
+# Labeler config — Template chrysa générique
+# Source : shared-standards/templates/github-config/labeler.yml
+# Assigne des labels automatiquement selon les fichiers modifiés par la PR.
+# À appliquer tel quel sur tous les repos chrysa. Chaque repo peut y AJOUTER
+# des sections repo-specific en fin de fichier (mais ne pas supprimer les génériques).
 
-ci:
+# ═══════════════ LANGUAGES ═══════════════
+
+Python:
     - changed-files:
           - any-glob-to-any-file:
-                - '.github/workflows/**'
-                - '.github/dependabot.yml'
+                - '**/*.py'
+                - pyproject.toml
+                - requirements*.txt
+                - setup.cfg
+                - setup.py
 
-pre-commit:
+TypeScript:
     - changed-files:
           - any-glob-to-any-file:
-                - '.pre-commit-config.yaml'
-                - '.pre-commit-hooks.yaml'
+                - '**/*.ts'
+                - '**/*.tsx'
+                - tsconfig*.json
 
-documentation:
+JavaScript:
     - changed-files:
           - any-glob-to-any-file:
+                - '**/*.js'
+                - '**/*.jsx'
+                - '**/*.mjs'
+                - '**/*.cjs'
+                - package.json
+                - package-lock.json
+                - pnpm-lock.yaml
+                - yarn.lock
+
+Shell:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/*.sh'
+                - '**/*.bash'
+                - Makefile
+
+# ═══════════════ AREAS ═══════════════
+
+Api:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/api/**'
+                - '**/api_urls.py'
+                - '**/routes/**'
+                - '**/services/**'
+
+Ui:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/components/**'
+                - '**/pages/**'
+                - '**/layouts/**'
+                - '**/styles/**'
+                - '**/*.css'
+                - '**/*.scss'
+
+Auth:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/auth/**'
+                - '**/authentication/**'
+
+Database:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/migrations/**'
+                - '**/models/**'
+                - '**/models.py'
+                - '**/schema.sql'
+
+Tests:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/tests/**'
+                - '**/__tests__/**'
+                - '**/*.test.*'
+                - '**/*.spec.*'
+                - '**/conftest.py'
+
+Translations:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/i18n/**'
+                - '**/locales/**'
+                - '**/translations/**'
+
+# ═══════════════ INFRA / META ═══════════════
+
+Ci:
+    - changed-files:
+          - any-glob-to-any-file:
+                - .github/workflows/**
+                - .github/actions/**
+
+Docker:
+    - changed-files:
+          - any-glob-to-any-file:
+                - docker/**
+                - Dockerfile*
+                - .dockerignore
+                - docker-compose*.y[a]ml
+
+Docs:
+    - changed-files:
+          - any-glob-to-any-file:
+                - docs/**
+                - '**/*.md'
+                - '**/*.rst'
+
+Makefiles:
+    - changed-files:
+          - any-glob-to-any-file:
+                - Makefile
+                - makefiles/**
+
+Pre-commit:
+    - changed-files:
+          - any-glob-to-any-file:
+                - .pre-commit-config.yaml
+
+Configurations:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/config/**'
+                - '**/.eslintrc*'
+                - '**/eslint.config.*'
+                - '**/vite.config.*'
+                - '**/vitest.config.*'
+                - '**/ruff.toml'
+                - '**/mypy.ini'
+
+Scripts:
+    - changed-files:
+          - any-glob-to-any-file:
+                - scripts/**
+                - bin/**
+
+# ═══════════════ SKIP-CI (docs-only) ═══════════════
+
+skip-ci:
+    - changed-files:
+          - any-glob-to-all-files:
+                - docs/**
                 - '*.md'
-                - 'docs/**'
-                - 'README*'
+                - '*.rst'
+                - LICENSE
 
-dependencies:
-    - changed-files:
-          - any-glob-to-any-file:
-                - 'pyproject.toml'
-                - 'requirements*.txt'
-                - 'package.json'
-                - 'package-lock.json'
+# ═══════════════ BRANCH-BASED ═══════════════
 
-configuration:
-    - changed-files:
-          - any-glob-to-any-file:
-                - '*.toml'
-                - '*.yml'
-                - '*.yaml'
-                - '*.json'
-                - '.env*'
-                - 'Makefile'
+Release:
+    - base-branch: [main, master]
 
-templates:
-    - changed-files:
-          - any-glob-to-any-file:
-                - 'templates/**'
-                - 'workflows/**'
+Staging:
+    - base-branch: develop

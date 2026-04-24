@@ -1,0 +1,17 @@
+# Auto-assign reviewers config
+# Source : shared-standards/templates/github-config/auto_assign.yml
+# kentaro-m/auto-assign-action · 1 reviewer owner par défaut
+
+addReviewers: true
+addAssignees: author
+
+reviewers:
+    - chrysa
+    - anthony-greau
+
+numberOfReviewers: 1
+
+skipKeywords:
+    - wip
+    - draft
+    - '[SKIP CI]'

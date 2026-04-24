@@ -1,0 +1,28 @@
+---
+# Source : chrysa/shared-standards/templates/workflows-process/
+# Adapté de padam-av · runs-on: ubuntu-latest (pas de self-hosted)
+name: Label when approved
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+on: pull_request_review
+
+permissions:
+    contents: read
+    pull-requests: write
+
+jobs:
+    label-when-approved:
+        name: Label when approved
+        runs-on: ubuntu-latest
+        steps:
+            - name: Label when approved by committers
+              uses: TobKed/label-when-approved-action@0058d0094da27e116fad6e0da516ebe1107f26de # v1.4
+              with:
+                  token: ${{ github.token }}
+                  label: Approved
+                  require_committers_approval: 'true'
+                  remove_label_when_approval_missing: 'false'
+                  comment: PR approved by at least one committer.
