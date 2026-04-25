@@ -36,7 +36,12 @@ Every new project in the ecosystem needs the same set of things:
 
 ## Architecture
 
-See [issue #1](https://github.com/chrysa/project-init/issues/1) for the architecture decision.
+See [ADR-001](docs/adr/ADR-001-architecture.md) for the full architecture decision record covering:
+- Entry point: `typer` CLI (`project-init init / update / list-types`)
+- Config format: `.project-init.yaml` manifest (interactive fallback)
+- Output model: merge strategy (idempotent, non-destructive)
+- Extensibility: Jinja2 template bundles + lifecycle hooks
+- Integration with `chrysa/shared-standards`
 
 ## Issues
 
