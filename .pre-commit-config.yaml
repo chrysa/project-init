@@ -17,7 +17,7 @@ repos:
           - id: no-commit-to-branch
             args: [--branch, main]
     - repo: https://github.com/igorshubovych/markdownlint-cli
-      rev: f7ed74202ac8ec26bab4a68359556c5243df142f
+      rev: cfc833bfc00c7cc40f702bd9e02df34d850d0291
       hooks:
           - id: markdownlint
             args: [--fix]
