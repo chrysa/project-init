@@ -23,7 +23,7 @@ repos:
             args: [--fix]
             stages: [manual]
     - repo: https://github.com/chrysa/pre-commit-tools
-      rev: v0.1.1-37
+      rev: v0.1.1-54
       hooks:
           - id: yaml-sorter
             exclude: ^(\.github/)
