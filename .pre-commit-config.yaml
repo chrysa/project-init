@@ -5,7 +5,7 @@ fail_fast: false
 minimum_pre_commit_version: 4.1.0
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: 803469bde8523f208d030ce33f575d7bee0ba9bf
+      rev: v6.0.0
       hooks:
           - id: check-json
           - id: check-yaml
@@ -17,13 +17,13 @@ repos:
           - id: no-commit-to-branch
             args: [--branch, main]
     - repo: https://github.com/igorshubovych/markdownlint-cli
-      rev: cfc833bfc00c7cc40f702bd9e02df34d850d0291
+      rev: v0.48.0
       hooks:
           - id: markdownlint
             args: [--fix]
             stages: [manual]
     - repo: https://github.com/chrysa/pre-commit-tools
-      rev: v0.1.1-54
+      rev: v0.1.1-58
       hooks:
           - id: yaml-sorter
             exclude: ^(\.github/)
