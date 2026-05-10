@@ -2,37 +2,37 @@
 name: CI
 
 on:
-    push:
-        branches:
-            - main
-            - develop
-            - "feat/**"
-            - "fix/**"
-            - "ci/**"
-            - "chore/**"
-    pull_request:
-        branches: [main, develop]
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+      - "feat/**"
+      - "fix/**"
+      - "ci/**"
+      - "chore/**"
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
 
 permissions:
-    contents: read
+  contents: read
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    lint:
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        name: Lint & validate
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    name: Lint & validate
 
-        steps:
-            - uses: actions/checkout@v6
+    steps:
+      - uses: actions/checkout@v6
 
-            - uses: actions/setup-python@v6
-              with:
-                  python-version: '3.12'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
 
-            - name: Run pre-commit hooks
-              uses: pre-commit/action@v3.0.1
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v3.0.1
