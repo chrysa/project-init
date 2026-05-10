@@ -1,8 +1,8 @@
 mode: ContinuousDeployment
 increment: Inherit
-major-version-bump-message: "^(feat|fix|refactor)(\(.+\))?!:.+"
-minor-version-bump-message: "^feat(\(.+\))?:.+"
-patch-version-bump-message: "^(fix|refactor|perf|docs|chore)(\(.+\))?:.+"
+major-version-bump-message: '^(feat|fix|refactor)(\(.+\))?!:.+'
+minor-version-bump-message: '^feat(\(.+\))?:.+'
+patch-version-bump-message: '^(fix|refactor|perf|docs|chore)(\(.+\))?:.+'
 branches:
   main:
     regex: "^main$"
