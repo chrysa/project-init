@@ -26,6 +26,6 @@ repos:
       rev: v0.1.1-73
       hooks:
           - id: yaml-sorter
-            exclude: ^(\.github/)
+            exclude: ^(\.github/|GitVersion\.yml)
           - id: json-sorter
           - id: env-file-check
