@@ -2,73 +2,13 @@
 name: Quality Gate Check
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - main
-      - master
-      - develop
-  push:
-    branches:
-      - main
-      - master
-
-permissions:
-  contents: read
-  checks: write
-  statuses: write
+    pull_request:
+        branches: [main, master, develop]
+        types: [opened, reopened, synchronize]
+    push:
+        branches: [main, master]
 
 jobs:
-  quality-gate:
-    runs-on: ubuntu-latest
-    name: No-Regression Quality Gates
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.11"
-
-      - name: Set up Node.js (if needed)
-        uses: actions/setup-node@v6
-        with:
-          node-version: "20"
-          cache: "npm"
-        continue-on-error: true
-
-      - name: Install dependencies
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f package.json ]; then npm ci; fi
-
-      - name: Restore quality gate baseline from main
-        run: |
-          git fetch origin main --depth=1 2>/dev/null || true
-          git show origin/main:.quality-gate-baseline.json > .quality-gate-baseline.json 2>/dev/null || true
-
-      - name: Run quality gate verification
-        id: quality-gate
-        run: |
-          if [ ! -s .quality-gate-baseline.json ]; then
-            echo "No baseline found on main — skipping quality gate verification."
-            echo "Run 'make quality-gate-baseline' on main and commit .quality-gate-baseline.json to enable regression detection."
-            exit 0
-          fi
-          make quality-gate-verify || exit_code=$?
-          exit "${exit_code:-0}"
-
-      - name: Report quality gate status
-        if: always()
-        env:
-          OUTCOME: ${{ steps.quality-gate.outcome }}
-        run: |
-          if [ "$OUTCOME" = 'success' ]; then
-            echo "✅ All quality gates passed"
-            exit 0
-          else
-            echo "❌ Quality gate regression detected"
-            exit 1
-          fi
+    call:
+        uses: chrysa/github-actions/.github/workflows/quality-gate-check.yml@main
+        secrets: inherit
