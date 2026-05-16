@@ -1,4 +1,4 @@
-.PHONY: help install dev test test-cov lint format typecheck build docker-up docker-down clean pre-commit
+.PHONY: help install dev test test-cov docker-test lint format typecheck build docker-up docker-down clean pre-commit
 
 help:
 	@echo "Available targets:"
@@ -22,10 +22,14 @@ dev:
 	@echo "No dev server — project-init is a CLI tool"
 
 test:
-	@echo "No tests yet — see issues for the test plan"
+	@echo "No tests yet — run docker-test for CI-compatible tests"
+
+docker-test: ## Run tests inside Docker (CI-compatible)
+	docker build -f Dockerfile.test -t project-init-test .
+	docker run --rm project-init-test
 
 test-cov:
-	@echo "No tests yet — see issues for the test plan"
+	@echo "No tests yet — run docker-test for CI-compatible tests"
 
 lint:
 	pre-commit run --all-files
