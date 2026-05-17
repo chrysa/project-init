@@ -43,8 +43,20 @@ class QualityGate:
             ("Lint", "lint", "warning_count", "=", "make lint"),
             ("Types", "types", "error_count", "≤", "make type-check"),
             ("Build", "build", "build_status", "=", "make build"),
-            ("Secrets", "security_secrets", "secret_count", "=", "detect-secrets scan --all-files 2>&1 || true"),
-            ("VulnDeps", "security_vulns", "vuln_count", "≤", "pip-audit 2>&1 || npm audit --audit-level=high 2>&1 || true"),
+            (
+                "Secrets",
+                "security_secrets",
+                "secret_count",
+                "=",
+                "detect-secrets scan --all-files 2>&1 || true",
+            ),
+            (
+                "VulnDeps",
+                "security_vulns",
+                "vuln_count",
+                "≤",
+                "pip-audit 2>&1 || npm audit --audit-level=high 2>&1 || true",
+            ),
         ]
 
     def _run(self, cmd: str) -> Tuple[int, str]:
@@ -147,7 +159,9 @@ class QualityGate:
             return current <= target
         return False
 
-    def _run_gate(self, gate_name: str, key: str, metric_name: str, default_cmd: str) -> Dict[str, Any]:
+    def _run_gate(
+        self, gate_name: str, key: str, metric_name: str, default_cmd: str
+    ) -> Dict[str, Any]:
         cmd = self.config.get("commands", {}).get(key, default_cmd)
         print(f"RUN_GATE|{gate_name}|{cmd}")
         exit_code, output = self._run(cmd)
@@ -203,7 +217,9 @@ class QualityGate:
             return True
 
         print(self._RESULT_FAIL)
-        print("ERROR: baseline contains failing gates; fix quality checks before using this baseline")
+        print(
+            "ERROR: baseline contains failing gates; fix quality checks before using this baseline"
+        )
         return False
 
     def _evaluate_gate_status(
@@ -254,9 +270,6 @@ class QualityGate:
             baseline_metric = baseline_gate.get("metric", 0)
             target = threshold_cfg.get("value", baseline_metric)
             current_metric = current.get("metric", 0)
-
-            passed = True
-            reason = "ok"
 
             passed, reason = self._evaluate_gate_status(
                 baseline_valid, current, current_metric, target, operator
