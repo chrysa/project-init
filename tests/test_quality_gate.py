@@ -80,12 +80,12 @@ class TestParseCoverage:
     def test_total_line_with_percent(self, tmp_path: Path) -> None:
         gate = _make_gate(tmp_path)
         output = "TOTAL    100     12     16      2    83%"
-        assert gate._parse_coverage(output) == 83.0
+        assert gate._parse_coverage(output) == pytest.approx(83.0)
 
     def test_coverage_report_line(self, tmp_path: Path) -> None:
         gate = _make_gate(tmp_path)
         output = "Total coverage: 91.5%"
-        assert gate._parse_coverage(output) == 91.5
+        assert gate._parse_coverage(output) == pytest.approx(91.5)
 
     def test_no_match_returns_minus_one(self, tmp_path: Path) -> None:
         gate = _make_gate(tmp_path)
@@ -223,7 +223,7 @@ class TestParseMetric:
 
     def test_coverage_gate(self, tmp_path: Path) -> None:
         gate = _make_gate(tmp_path)
-        assert gate._parse_metric("Coverage", 0, "Total coverage: 85%") == 85.0
+        assert gate._parse_metric("Coverage", 0, "Total coverage: 85%") == pytest.approx(85.0)
 
     def test_lint_gate(self, tmp_path: Path) -> None:
         gate = _make_gate(tmp_path)
