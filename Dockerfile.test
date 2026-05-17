@@ -1,10 +1,15 @@
 FROM python:3.14-slim AS deps
 WORKDIR /app
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install "pytest>=8.0" "pytest-cov>=5.0"
+RUN pip install --only-binary :all: --upgrade pip setuptools wheel
+RUN pip install --only-binary :all: "pytest>=8.0" "pytest-cov>=5.0"
 
 FROM deps AS test
-COPY . .
+# Copy only necessary files to avoid inadvertently adding sensitive data
+COPY scripts/ ./scripts/
+COPY tests/ ./tests/
+# Run as non-root user
+RUN useradd --create-home appuser
+USER appuser
 ENV PYTHONPATH=/app/scripts
 CMD ["pytest", "tests/", "--cov=scripts", "--cov-branch", \
      "--cov-report=xml:coverage.xml", "--cov-report=term-missing", \
