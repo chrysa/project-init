@@ -24,6 +24,7 @@ class QualityGate:
 
     _RESULT_PASS = "OVERALL_RESULT|PASS"
     _RESULT_FAIL = "OVERALL_RESULT|FAIL"
+    _GATE_RESULT_FMT = "GATE_RESULT|{gate}|{status}|baseline={bl}|target={tgt}|current={cur}|op={op}|exit={ex}|reason={reason}"
 
     def __init__(self) -> None:
         self.config_path = Path(self.CONFIG_FILE)
@@ -240,6 +241,54 @@ class QualityGate:
         except Exception:
             return False, "comparison_error"
 
+    def _process_verify_gate(
+        self,
+        gate_name: str,
+        key: str,
+        metric_name: str,
+        default_op: str,
+        default_cmd: str,
+        baseline: Dict[str, Any],
+        baseline_valid: bool,
+    ) -> Tuple[bool, Dict[str, Any]]:
+        """Run a single gate verification and return (passed, report_entry)."""
+        current = self._run_gate(gate_name, key, metric_name, default_cmd)
+        baseline_gate = baseline.get("gates", {}).get(gate_name, {})
+        threshold_cfg = self.config.get("thresholds", {}).get(key, {})
+        operator = str(threshold_cfg.get("operator", default_op))
+        baseline_metric = baseline_gate.get("metric", 0)
+        target = threshold_cfg.get("value", baseline_metric)
+        current_metric = current.get("metric", 0)
+        passed, reason = self._evaluate_gate_status(
+            baseline_valid, current, current_metric, target, operator
+        )
+        status = "PASS" if passed else "FAIL"
+        print(
+            self._GATE_RESULT_FMT.format(
+                gate=gate_name,
+                status=status,
+                bl=baseline_metric,
+                tgt=target,
+                cur=current_metric,
+                op=operator,
+                ex=current.get("exit_code", 1),
+                reason=reason,
+            )
+        )
+        entry: Dict[str, Any] = {
+            "gate": gate_name,
+            "status": status,
+            "reason": reason,
+            "operator": operator,
+            "baseline_metric": baseline_metric,
+            "target": target,
+            "current_metric": current_metric,
+            "exit_code": current.get("exit_code", 1),
+            "metric_name": metric_name,
+            "command": current.get("command", ""),
+        }
+        return passed, entry
+
     def verify(self) -> bool:
         print("VERIFY|START")
         if not self.baseline_path.exists():
@@ -262,43 +311,13 @@ class QualityGate:
         gate_reports: List[Dict[str, Any]] = []
 
         for gate_name, key, metric_name, default_op, default_cmd in self.gates:
-            current = self._run_gate(gate_name, key, metric_name, default_cmd)
-            baseline_gate = baseline.get("gates", {}).get(gate_name, {})
-
-            threshold_cfg = self.config.get("thresholds", {}).get(key, {})
-            operator = str(threshold_cfg.get("operator", default_op))
-            baseline_metric = baseline_gate.get("metric", 0)
-            target = threshold_cfg.get("value", baseline_metric)
-            current_metric = current.get("metric", 0)
-
-            passed, reason = self._evaluate_gate_status(
-                baseline_valid, current, current_metric, target, operator
+            passed, entry = self._process_verify_gate(
+                gate_name, key, metric_name, default_op, default_cmd,
+                baseline, baseline_valid,
             )
-
             if not passed:
                 all_passed = False
-
-            status = "PASS" if passed else "FAIL"
-            print(
-                f"GATE_RESULT|{gate_name}|{status}|baseline={baseline_metric}|"
-                f"target={target}|current={current_metric}|op={operator}|"
-                f"exit={current.get('exit_code', 1)}|reason={reason}"
-            )
-
-            gate_reports.append(
-                {
-                    "gate": gate_name,
-                    "status": status,
-                    "reason": reason,
-                    "operator": operator,
-                    "baseline_metric": baseline_metric,
-                    "target": target,
-                    "current_metric": current_metric,
-                    "exit_code": current.get("exit_code", 1),
-                    "metric_name": metric_name,
-                    "command": current.get("command", ""),
-                }
-            )
+            gate_reports.append(entry)
 
         report = {
             "mode": "verify",
