@@ -33,3 +33,6 @@ Thumbs.db
 .pre-commit-config.yaml.bak
 .ci-backup-*/
 .gitnexus
+
+# CodeGraph (local index — never commit)
+.codegraph/
