@@ -23,9 +23,18 @@ repos:
             args: [--fix]
             stages: [manual]
     - repo: https://github.com/chrysa/pre-commit-tools
-      rev: v0.1.1-75
+      rev0.1.1-76 v0.1.1-76
       hooks:
           - id: yaml-sorter
             exclude: ^(\.github/|GitVersion\.yml)
           - id: json-sorter
           - id: env-file-check
+          - id: regression-gate
+            stages: [pre-push]
+
+    - repo: https://github.com/compilerla/conventional-pre-commit
+      rev: v4.4.0
+      hooks:
+          - id: conventional-pre-commit
+            stages: [commit-msg]
+            args: [feat, fix, docs, style, refactor, test, chore, perf, revert, ci]
