@@ -465,4 +465,3 @@ class TestVerifyWithBaseline:
         with patch.object(gate, "_run_gate", side_effect=currents):
             result = gate.verify()
         assert result is False
-
