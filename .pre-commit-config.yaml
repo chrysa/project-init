@@ -29,3 +29,12 @@ repos:
             exclude: ^(\.github/|GitVersion\.yml)
           - id: json-sorter
           - id: env-file-check
+          - id: regression-gate
+            stages: [pre-push]
+
+    - repo: https://github.com/compilerla/conventional-pre-commit
+      rev: v4.4.0
+      hooks:
+          - id: conventional-pre-commit
+            stages: [commit-msg]
+            args: [feat, fix, docs, style, refactor, test, chore, perf, revert, ci]
