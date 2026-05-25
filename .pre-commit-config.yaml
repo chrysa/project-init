@@ -29,6 +29,13 @@ repos:
             exclude: ^(\.github/|GitVersion\.yml)
           - id: json-sorter
           - id: env-file-check
+          - id: adr-gate
+          - id: python-print-detection
+          - id: python-pprint-detection
+          - id: no-bare-except
+          - id: python-logger-detection
+          - id: no-sync-in-async
+          - id: debugger-detection
           - id: regression-gate
             stages: [pre-push]
 
