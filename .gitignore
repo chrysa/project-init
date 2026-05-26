@@ -36,3 +36,4 @@ Thumbs.db
 
 # CodeGraph (local index — never commit)
 .codegraph/
+graphify-out/
