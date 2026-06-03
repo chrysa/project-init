@@ -36,3 +36,11 @@ Thumbs.db
 
 # CodeGraph (local index — never commit)
 .codegraph/
+
+# graphify (local knowledge graph — never commit)
+graphify-out/
+/graphify
+/sys
+.graphify_version
+graphify
+sys
