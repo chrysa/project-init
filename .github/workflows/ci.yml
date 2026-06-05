@@ -28,7 +28,7 @@ jobs:
     name: Lint & validate
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
       - uses: chrysa/github-actions/python-setup@v1.0.12
         with:
