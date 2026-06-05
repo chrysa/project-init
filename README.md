@@ -69,3 +69,19 @@ See [ADR-001](docs/adr/ADR-001-architecture.md) for the full architecture decisi
 ## Status
 
 Early planning phase. See issues for the work breakdown.
+
+
+## Documentation map
+
+This repo follows the chrysa standardized documentation structure
+(`chrysa/shared-standards/templates/docs-structure`):
+
+- [`docs/`](docs/) — product, architecture, security, deployment, observability (stubs)
+- [`ai/`](ai/), [`prompts/`](prompts/) — AI assets & agent prompts
+- [`schemas/`](schemas/) — JSON Schema data contracts
+- [`workflows/`](workflows/) — end-to-end flow docs
+- [`decisions/`](decisions/), [`postmortems/`](postmortems/) — decision records & incident postmortems
+- [`examples/`](examples/) — reference “perfect” implementations
+- [`tests/`](tests/) — test scenario catalogues
+
+Files marked `status: stub` are placeholders to fill in.
