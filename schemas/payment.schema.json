@@ -1,0 +1,17 @@
+{
+  "$id": "https://chrysa.dev/schemas/payment.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "STUB — define the real schema.",
+  "properties": {
+    "id": {
+      "description": "Unique identifier (TODO)",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id"
+  ],
+  "title": "Payment",
+  "type": "object"
+}
