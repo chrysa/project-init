@@ -1,3 +1,4 @@
+# makefile-tier: lib
 .PHONY: help install dev test test-cov docker-test lint format typecheck build docker-up docker-down clean pre-commit
 
 help:
