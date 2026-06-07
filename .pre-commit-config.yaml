@@ -1,63 +1,70 @@
 default_language_version:
-  python: python3
+  python: python3.14
 fail_fast: false
 minimum_pre_commit_version: 4.1.0
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v6.0.0
-  hooks:
-  - id: check-json
-  - id: check-yaml
-    args: [--allow-multiple-documents]
-    exclude: ^(\.github/)ISSUE_TEMPLATE/
-  - id: trailing-whitespace
-  - id: end-of-file-fixer
-  - id: detect-private-key
-  - id: no-commit-to-branch
-    args: [--branch, main]
-- repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.48.0
-  hooks:
-  - id: markdownlint
-    args: [--fix]
-    stages: [manual]
-- repo: https://github.com/chrysa/pre-commit-tools
-  rev: v0.1.1-92
-  hooks:
-  - id: yaml-sorter
-    exclude: ^(\.github/|GitVersion\.yml)
-  - id: json-sorter
-  - id: env-file-check
-  - id: adr-gate
-  - id: python-print-detection
-  - id: python-pprint-detection
-  - id: no-bare-except
-  - id: python-logger-detection
-  - id: no-sync-in-async
-  - id: debugger-detection
-  - id: regression-gate
-    stages: [pre-push]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-json
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+        exclude: ^(\.github/)ISSUE_TEMPLATE/
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: detect-private-key
+      - id: no-commit-to-branch
+        args: [--branch, main]
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.48.0
+    hooks:
+      - id: markdownlint
+        args: [--fix]
+        stages: [manual]
+  - repo: https://github.com/chrysa/pre-commit-tools
+    rev: v0.1.1-93
+    hooks:
+      - id: yaml-sorter
+        exclude: ^(\.github/|GitVersion\.yml)
+      - id: json-sorter
+      - id: env-file-check
+      - id: adr-gate
+      - id: python-print-detection
+      - id: python-pprint-detection
+      - id: no-bare-except
+      - id: python-logger-detection
+      - id: no-sync-in-async
+      - id: debugger-detection
+      - id: regression-gate
+        stages: [pre-push]
+      - id: env-example-sync
+      - id: python-unreachable-code
+      - id: no-hardcoded-localhost
+        exclude: 'tests?/|\.test\.|\.spec\.'
 
-- repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v4.4.0
-  hooks:
-  - id: conventional-pre-commit
-    stages: [commit-msg]
-    args: [feat, fix, docs, style, refactor, test, chore, perf, revert, ci]
-- repo: local
-  hooks:
-  - id: run-tests
-    name: run test suite (with coverage)
-    entry: make docker-test
-    language: system
-    pass_filenames: false
-    stages:
-    - pre-push
-  - id: sonar-scanner
-    name: sonar cloud analysis
-    entry: bash -c 'docker run --rm --env SONAR_TOKEN -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli:11
-      -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=chrysa -Dsonar.projectKey=chrysa_project-init'
-    language: system
-    pass_filenames: false
-    stages:
-    - pre-push
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [feat, fix, docs, style, refactor, test, chore, perf, revert, ci]
+  - repo: local
+    hooks:
+      - id: run-tests
+        name: run test suite (with coverage)
+        entry: make docker-test
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-push
+      - id: sonar-scanner
+        name: sonar cloud analysis
+        entry: bash -c 'docker run --rm --env SONAR_TOKEN -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli:11 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=chrysa -Dsonar.projectKey=chrysa_project-init'
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-push
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
