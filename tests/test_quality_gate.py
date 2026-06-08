@@ -1,16 +1,14 @@
 """Tests for scripts/quality_gate.py — parse/compare helpers."""
 
 import json
-import sys
 import subprocess
+import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
-
-from quality_gate import QualityGate  # noqa: E402
+from quality_gate import QualityGate
 
 
 # ---------------------------------------------------------------------------
