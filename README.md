@@ -24,6 +24,12 @@ Every new project in the ecosystem needs the same set of things:
 
 `project-init` generates all of this consistently, reduces drift between projects, and integrates shared standards from [`chrysa/shared-standards`](https://github.com/chrysa/shared-standards).
 
+## Who it's for
+
+Maintainers bootstrapping new repositories in the chrysa ecosystem who want every
+project to start with the same CI, hooks, quality gates, and conventions — with no
+manual copy-paste and no drift between repos.
+
 ## Supported project types (planned)
 
 | Type           | Status     |
@@ -34,10 +40,60 @@ Every new project in the ecosystem needs the same set of things:
 | Automation/CLI | Planned    |
 | Tool/hook repo | Planned    |
 
+> The generator CLI below is not implemented yet (see [Status](#status)).
+> The **Quality Gate** tool, however, ships today and is usable in any repo.
+
+## Quality Gate (available now)
+
+`scripts/quality_gate.py` records a baseline of quality metrics, then fails CI
+when any metric regresses against that baseline. It drives seven gates: tests
+passed, coverage %, lint warnings, type errors, build status, leaked secrets,
+and vulnerable dependencies.
+
+### Requirements
+
+- Python ≥ 3.14
+- A `.quality-gate.json` config at the repo root (one is shipped here)
+
+### Usage
+
+```bash
+# 1. Record the baseline (must be all-green; aborts otherwise)
+make quality-gate-baseline
+# equivalent: python3 scripts/quality_gate.py baseline
+
+# 2. Verify no regression vs the baseline (run in CI on every PR)
+make quality-gate-verify
+# equivalent: python3 scripts/quality_gate.py verify
+```
+
+`baseline` runs every gate command, stores the metrics in
+`.quality-gate-baseline.json`, and refuses to write a baseline that contains
+failing gates. `verify` re-runs the gates and exits non-zero if any metric
+regresses; results are written to `.quality-gate-last-report.json` and emitted
+as machine-readable `GATE_RESULT|…` / `OVERALL_RESULT|…` lines.
+
+### Configuration (`.quality-gate.json`)
+
+- `commands.<gate>` — overrides the command run for a gate
+  (`tests`, `coverage`, `lint`, `types`, `build`).
+- `thresholds.<gate>.operator` — comparison vs target: `=`, `≥`, `≤`.
+- `thresholds.<gate>.value` — explicit target; when omitted, the recorded
+  baseline metric is used as the target.
+
+In CI, the gate runs via the reusable
+[`chrysa/github-actions` quality-gate-check workflow](.github/workflows/quality-gate-check.yml).
+
+### Reference examples
+
+[`examples/`](examples/) contains reference "perfect" implementations
+(service, repository, serializer, schema, API view, viewset) used as the
+quality bar for generated and reviewed code.
+
 ## Architecture
 
-See [ADR-001](docs/adr/ADR-001-architecture.md) for the full architecture decision record covering:
-- Entry point: `typer` CLI (`project-init init / update / list-types`)
+See [ADR-001](docs/adr/ADR-001-architecture.md) for the full architecture decision record covering the planned design:
+- Entry point: `typer` CLI (`project-init init / update / list-types`) — not yet implemented
 - Config format: `.project-init.yaml` manifest (interactive fallback)
 - Output model: merge strategy (idempotent, non-destructive)
 - Extensibility: Jinja2 template bundles + lifecycle hooks
