@@ -8,7 +8,7 @@ FROM deps AS test
 COPY scripts/ ./scripts/
 COPY tests/ ./tests/
 # Run as non-root user
-RUN useradd --create-home appuser
+RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 ENV PYTHONPATH=/app/scripts
 CMD ["pytest", "tests/", "--cov=scripts", "--cov-branch", \
