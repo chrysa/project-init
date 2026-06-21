@@ -27,7 +27,7 @@ repos:
     stages:
     - manual
 - repo: https://github.com/chrysa/pre-commit-tools
-  rev: v0.1.1-94
+  rev: v0.1.1-95
   hooks:
   - id: makefile-check
   - id: yaml-sorter
@@ -76,9 +76,8 @@ repos:
     - pre-push
   - id: sonar-scanner
     name: sonar cloud analysis
-    entry: bash -c 'docker run --rm --env SONAR_TOKEN -v "$(pwd):/usr/src" 
-      sonarsource/sonar-scanner-cli:11 -Dsonar.host.url=https://sonarcloud.io 
-      -Dsonar.organization=chrysa -Dsonar.projectKey=chrysa_project-init'
+    entry: bash -c 'docker run --rm --env SONAR_TOKEN -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli:11
+      -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=chrysa -Dsonar.projectKey=chrysa_project-init'
     language: system
     pass_filenames: false
     stages:
