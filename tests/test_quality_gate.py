@@ -4,7 +4,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from pytest_mock import MockerFixture
 
 import pytest
 
@@ -269,38 +269,38 @@ class TestVerifyMissingBaseline:
 
 
 class TestInit:
-    def test_init_loads_config(self, tmp_path: Path) -> None:
+    def test_init_loads_config(self, tmp_path: Path, mocker: MockerFixture) -> None:
         config = {
             "gates": {},
             "commands": {"tests": "echo done"},
         }
         config_path = tmp_path / ".quality-gate.json"
         config_path.write_text(json.dumps(config))
-        with patch("quality_gate.Path") as mock_path:
-            mock_path.side_effect = lambda x: tmp_path / x
-            gate = QualityGate.__new__(QualityGate)
-            gate.config_path = config_path
-            gate.baseline_path = tmp_path / ".quality-gate-baseline.json"
-            gate.last_report_path = tmp_path / ".quality-gate-last-report.json"
-            gate.config = json.loads(config_path.read_text())
-            gate.gates = []
+        mock_path = mocker.patch("quality_gate.Path")
+        mock_path.side_effect = lambda x: tmp_path / x
+        gate = QualityGate.__new__(QualityGate)
+        gate.config_path = config_path
+        gate.baseline_path = tmp_path / ".quality-gate-baseline.json"
+        gate.last_report_path = tmp_path / ".quality-gate-last-report.json"
+        gate.config = json.loads(config_path.read_text())
+        gate.gates = []
         assert gate.config["commands"]["tests"] == "echo done"
 
-    def test_init_exits_when_config_missing(self, tmp_path: Path) -> None:
-        with patch("quality_gate.Path") as mock_path:
-            missing = tmp_path / ".quality-gate.json"
-            mock_path.return_value = missing
-            # Directly test sys.exit on missing file
-            with pytest.raises(SystemExit):
-                gate = QualityGate.__new__(QualityGate)
-                gate.config_path = missing
-                gate.baseline_path = tmp_path / ".baseline.json"
-                gate.last_report_path = tmp_path / ".report.json"
-                gate.config = {}
-                gate.gates = []
-                # Now call __init__ logic manually
-                if not gate.config_path.exists():
-                    sys.exit(1)
+    def test_init_exits_when_config_missing(self, tmp_path: Path, mocker: MockerFixture) -> None:
+        mock_path = mocker.patch("quality_gate.Path")
+        missing = tmp_path / ".quality-gate.json"
+        mock_path.return_value = missing
+        # Directly test sys.exit on missing file
+        with pytest.raises(SystemExit):
+            gate = QualityGate.__new__(QualityGate)
+            gate.config_path = missing
+            gate.baseline_path = tmp_path / ".baseline.json"
+            gate.last_report_path = tmp_path / ".report.json"
+            gate.config = {}
+            gate.gates = []
+            # Now call __init__ logic manually
+            if not gate.config_path.exists():
+                sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -309,32 +309,32 @@ class TestInit:
 
 
 class TestRun:
-    def test_run_success(self, tmp_path: Path) -> None:
+    def test_run_success(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(returncode=0, stdout="ok", stderr="")
-            code, output = gate._run("echo ok")
+        mock_run = mocker.patch("subprocess.run")
+        mock_run.return_value = mocker.MagicMock(returncode=0, stdout="ok", stderr="")
+        code, output = gate._run("echo ok")
         assert code == 0
         assert "ok" in output
 
-    def test_run_failure(self, tmp_path: Path) -> None:
+    def test_run_failure(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="err")
-            code, output = gate._run("false")
+        mock_run = mocker.patch("subprocess.run")
+        mock_run.return_value = mocker.MagicMock(returncode=1, stdout="", stderr="err")
+        code, output = gate._run("false")
         assert code == 1
 
-    def test_run_timeout(self, tmp_path: Path) -> None:
+    def test_run_timeout(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
-        with patch("subprocess.run", side_effect=subprocess.TimeoutExpired("cmd", 600)):
-            code, output = gate._run("sleep 999")
+        mocker.patch("subprocess.run", side_effect=subprocess.TimeoutExpired("cmd", 600))
+        code, output = gate._run("sleep 999")
         assert code == 124
         assert "timed out" in output.lower()
 
-    def test_run_exception(self, tmp_path: Path) -> None:
+    def test_run_exception(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
-        with patch("subprocess.run", side_effect=OSError("not found")):
-            code, output = gate._run("missing-cmd")
+        mocker.patch("subprocess.run", side_effect=OSError("not found"))
+        code, output = gate._run("missing-cmd")
         assert code == 127
 
 
@@ -344,19 +344,19 @@ class TestRun:
 
 
 class TestRunGate:
-    def test_run_gate_uses_config_command(self, tmp_path: Path) -> None:
+    def test_run_gate_uses_config_command(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
         gate.config["commands"]["tests"] = "echo 5 passed"
-        with patch.object(gate, "_run", return_value=(0, "5 passed")):
-            result = gate._run_gate("Tests", "tests", "passed_tests", "make test")
+        mocker.patch.object(gate, "_run", return_value=(0, "5 passed"))
+        result = gate._run_gate("Tests", "tests", "passed_tests", "make test")
         assert result["gate"] == "Tests"
         assert result["metric"] == 5
         assert result["exit_code"] == 0
 
-    def test_run_gate_uses_default_when_no_override(self, tmp_path: Path) -> None:
+    def test_run_gate_uses_default_when_no_override(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
-        with patch.object(gate, "_run", return_value=(0, "1 passed")):
-            result = gate._run_gate("Tests", "tests", "passed_tests", "make test")
+        mocker.patch.object(gate, "_run", return_value=(0, "1 passed"))
+        result = gate._run_gate("Tests", "tests", "passed_tests", "make test")
         assert result["command"] == "make test"
 
 
@@ -377,20 +377,20 @@ class TestBaseline:
             "output": "1 passed",
         }
 
-    def test_baseline_pass_writes_file(self, tmp_path: Path) -> None:
+    def test_baseline_pass_writes_file(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
         results = [self._gate_result(g[0]) for g in gate.gates]
-        with patch.object(gate, "_run_gate", side_effect=results):
-            result = gate.baseline()
+        mocker.patch.object(gate, "_run_gate", side_effect=results)
+        result = gate.baseline()
         assert result is True
         assert gate.baseline_path.exists()
 
-    def test_baseline_fail_when_gate_fails(self, tmp_path: Path) -> None:
+    def test_baseline_fail_when_gate_fails(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
         results = [self._gate_result(g[0], exit_code=(1 if i == 0 else 0))
                    for i, g in enumerate(gate.gates)]
-        with patch.object(gate, "_run_gate", side_effect=results):
-            result = gate.baseline()
+        mocker.patch.object(gate, "_run_gate", side_effect=results)
+        result = gate.baseline()
         assert result is False
         data = json.loads(gate.baseline_path.read_text())
         assert data["valid"] is False
@@ -432,26 +432,26 @@ class TestVerifyWithBaseline:
         }
         gate.baseline_path.write_text(json.dumps(baseline_data))
 
-    def test_verify_all_pass(self, tmp_path: Path) -> None:
+    def test_verify_all_pass(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
         self._write_baseline(gate)
         currents = [self._current_gate(g[0]) for g in gate.gates]
-        with patch.object(gate, "_run_gate", side_effect=currents):
-            result = gate.verify()
+        mocker.patch.object(gate, "_run_gate", side_effect=currents)
+        result = gate.verify()
         assert result is True
         report = json.loads(gate.last_report_path.read_text())
         assert report["overall"] == "PASS"
 
-    def test_verify_fail_on_command_failure(self, tmp_path: Path) -> None:
+    def test_verify_fail_on_command_failure(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
         self._write_baseline(gate)
         currents = [self._current_gate(g[0], exit_code=(1 if i == 0 else 0))
                     for i, g in enumerate(gate.gates)]
-        with patch.object(gate, "_run_gate", side_effect=currents):
-            result = gate.verify()
+        mocker.patch.object(gate, "_run_gate", side_effect=currents)
+        result = gate.verify()
         assert result is False
 
-    def test_verify_fail_on_invalid_baseline(self, tmp_path: Path) -> None:
+    def test_verify_fail_on_invalid_baseline(self, tmp_path: Path, mocker: MockerFixture) -> None:
         gate = _make_gate(tmp_path)
         baseline_data = {
             "recorded_at": "2026-01-01T00:00:00",
@@ -460,6 +460,6 @@ class TestVerifyWithBaseline:
         }
         gate.baseline_path.write_text(json.dumps(baseline_data))
         currents = [self._current_gate(g[0]) for g in gate.gates]
-        with patch.object(gate, "_run_gate", side_effect=currents):
-            result = gate.verify()
+        mocker.patch.object(gate, "_run_gate", side_effect=currents)
+        result = gate.verify()
         assert result is False
