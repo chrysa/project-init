@@ -1,7 +1,7 @@
 FROM python:3.14-slim AS deps
 WORKDIR /app
 RUN pip install --only-binary :all: --upgrade pip setuptools wheel
-RUN pip install --only-binary :all: "pytest>=8.0" "pytest-cov>=5.0"
+RUN pip install --only-binary :all: "pytest>=8.0" "pytest-cov>=5.0" "pytest-mock>=3.14"
 
 FROM deps AS test
 # Copy only necessary files to avoid inadvertently adding sensitive data
