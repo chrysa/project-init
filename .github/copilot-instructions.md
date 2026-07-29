@@ -89,7 +89,7 @@ Every generated repo must include at minimum:
 - `.github/PULL_REQUEST_TEMPLATE.md` and `labeler.yml`
 - `docs/index.md`
 - `CLAUDE.md`, `CHANGELOG.md`, `cliff.toml`, `GitVersion.yml`
-- `Makefile`, `opencode.json`, `README.md`
+- `Makefile`, `README.md`
 
 Full spec: `chrysa/shared-standards/EXECUTION_STANDARD.md §2`
 
