@@ -9,6 +9,7 @@ requires-python = ">=3.14"
 
 [project.optional-dependencies]
 test = [
+    "chrysa-quality-gate @ git+ssh://git@github.com/chrysa/chrysa-lib.git@v0.3.0#subdirectory=packages/python/quality-gate",
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
     "pytest-mock>=3.14",
