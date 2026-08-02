@@ -1,4 +1,8 @@
-"""Tests for scripts/quality_gate.py — parse/compare helpers."""
+"""Tests for the shared quality gate — parse/compare helpers.
+
+The implementation lives in the `chrysa_quality_gate` package (chrysa-lib), not
+in a vendored `scripts/quality_gate.py` copy — see chrysa/shared-standards#274.
+"""
 
 import json
 import subprocess
@@ -8,7 +12,7 @@ from pytest_mock import MockerFixture
 
 import pytest
 
-from quality_gate import QualityGate
+from chrysa_quality_gate import QualityGate
 
 
 # ---------------------------------------------------------------------------
@@ -276,7 +280,7 @@ class TestInit:
         }
         config_path = tmp_path / ".quality-gate.json"
         config_path.write_text(json.dumps(config))
-        mock_path = mocker.patch("quality_gate.Path")
+        mock_path = mocker.patch("chrysa_quality_gate.Path")
         mock_path.side_effect = lambda x: tmp_path / x
         gate = QualityGate.__new__(QualityGate)
         gate.config_path = config_path
@@ -287,7 +291,7 @@ class TestInit:
         assert gate.config["commands"]["tests"] == "echo done"
 
     def test_init_exits_when_config_missing(self, tmp_path: Path, mocker: MockerFixture) -> None:
-        mock_path = mocker.patch("quality_gate.Path")
+        mock_path = mocker.patch("chrysa_quality_gate.Path")
         missing = tmp_path / ".quality-gate.json"
         mock_path.return_value = missing
         # Directly test sys.exit on missing file
