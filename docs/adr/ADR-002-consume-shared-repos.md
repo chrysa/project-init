@@ -36,11 +36,30 @@ truth; `project-init` is an **orchestrator**, not a generator.
 **`project-init` consumes the shared repos as dependencies and delegates to them;
 it re-implements none of their logic.**
 
-1. **App/module generation delegates to the forge tools.** A `python-fastapi`
-   type does not carry a hand-written `router.py`/`service.py`/`schemas.py`
-   Jinja bundle — it declares the module shape in the forge's YAML and invokes
-   `fastapi-app-generator` (resp. `django-app-forge`). `project-init` owns the
-   *manifest → forge-YAML → invoke* wiring, not the file templates.
+1. **App/module generation delegates to the forge *engine*; project-init owns the
+   *structure data* it feeds it.** The forge (`fastapi-app-generator` /
+   `django-app-forge`) is a **pure renderer**: it ships no built-in FastAPI
+   opinion — the `templates:` / `structures:` blocks are *input data* in the YAML
+   it renders. So the boundary is:
+   - **The forge owns the mechanism** — template rendering, file writing,
+     `--dry-run`, skip/`--force`, idempotent re-runs. `project-init` re-implements
+     none of it.
+   - **`project-init` owns the canonical structure definitions** — a single
+     `templates/fastapi/structures.yaml` describing what a chrysa FastAPI module
+     is (`fastapi_module`, `fastapi_module_with_migration`,
+     `fastapi_module_secure`). This is **data fed to the delegated engine, not a
+     re-implementation of it**: one file, generator logic stays upstream.
+
+   `project-init` therefore owns the *manifest → merge modules into
+   structures.yaml → invoke the forge* wiring plus that canonical file; it owns
+   **no** rendering/generation code.
+
+   *Decision (2026-08-08):* the canonical FastAPI structures live in
+   `project-init/templates/fastapi/structures.yaml` — not in `shared-standards`,
+   not embedded upstream — because owning "what a chrysa module looks like" is
+   `project-init`'s job, while `shared-standards` stays scoped to standards/config
+   and the forge stays a generic engine. Revisit if a second consumer needs the
+   same structures (then they move to their transverse home per *no duplication*).
 
 2. **Makefile comes from `base-makefile`.** Generated repos `include` the
    published `base-makefile` templates (or vendor a pinned copy via the sync
