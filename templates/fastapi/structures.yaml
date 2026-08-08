@@ -1,0 +1,332 @@
+# Canonical chrysa FastAPI module structures — OWNED by project-init.
+#
+# This file is *input data* for the fastapi-app-generator engine (the forge).
+# project-init merges the manifest's `modules:` into this document at runtime and
+# invokes `fastapi-app-generator --config <merged>.yaml`. It re-implements none of
+# the forge's rendering logic — see docs/adr/ADR-002-consume-shared-repos.md §1.
+#
+# Placeholders rendered per module by the forge:
+#   {{ module_name }}   snake_case   (e.g. user_profile)
+#   {{ module_class }}  PascalCase   (e.g. UserProfile)
+#   {{ router_prefix }} kebab-case   (e.g. /user-profiles)
+#   {{ model_class }}   == module_class
+#   plus anything under `context:` below.
+
+version: 1
+
+# Directory all modules are created under, relative to --root. project-init may
+# override this from the manifest before invoking the forge.
+base_path: app/api
+
+context:
+  author: chrysa
+  db_schema: public
+
+templates:
+  init_py: ""
+
+  router_py: |
+    """{{ module_class }} router."""
+    from __future__ import annotations
+
+    from fastapi import APIRouter, Depends, status
+
+    from .dependencies import get_{{ module_name }}_service
+    from .schemas import {{ module_class }}Create, {{ module_class }}Response
+    from .service import {{ module_class }}Service
+
+    router = APIRouter(prefix="{{ router_prefix }}", tags=["{{ module_class }}"])
+
+
+    @router.get("", response_model=list[{{ module_class }}Response], status_code=status.HTTP_200_OK)
+    async def list_{{ module_name }}s(
+        service: {{ module_class }}Service = Depends(get_{{ module_name }}_service),
+    ) -> list[{{ module_class }}Response]:
+        """Return all {{ module_class }} records."""
+        return await service.list()
+
+
+    @router.post("", response_model={{ module_class }}Response, status_code=status.HTTP_201_CREATED)
+    async def create_{{ module_name }}(
+        payload: {{ module_class }}Create,
+        service: {{ module_class }}Service = Depends(get_{{ module_name }}_service),
+    ) -> {{ module_class }}Response:
+        """Create a new {{ module_class }}."""
+        return await service.create(payload)
+
+  schemas_py: |
+    """{{ module_class }} Pydantic v2 schemas."""
+    from __future__ import annotations
+
+    from pydantic import BaseModel, ConfigDict
+
+
+    class {{ module_class }}Base(BaseModel):
+        model_config = ConfigDict(from_attributes=True)
+
+        name: str
+
+
+    class {{ module_class }}Create({{ module_class }}Base):
+        pass
+
+
+    class {{ module_class }}Response({{ module_class }}Base):
+        id: int
+
+  models_py: |
+    """{{ module_class }} SQLAlchemy 2.x ORM model."""
+    from __future__ import annotations
+
+    from sqlalchemy import String
+    from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+    class Base(DeclarativeBase):
+        pass
+
+
+    class {{ model_class }}(Base):
+        """{{ model_class }} ORM model — authored by {{ author }}."""
+
+        __tablename__ = "{{ module_name }}s"
+        __table_args__ = {"schema": "{{ db_schema }}"}
+
+        id: Mapped[int] = mapped_column(primary_key=True)
+        name: Mapped[str] = mapped_column(String(255), nullable=False)
+
+  service_py: |
+    """{{ module_class }} service — business logic, no HTTP or ORM imports at module level."""
+    from __future__ import annotations
+
+    from .schemas import {{ module_class }}Create, {{ module_class }}Response
+
+
+    class {{ module_class }}Service:
+        """Encapsulates all {{ module_class }} business logic."""
+
+        async def list(self) -> list[{{ module_class }}Response]:
+            """Return all {{ module_class }} records."""
+            raise NotImplementedError
+
+        async def create(self, payload: {{ module_class }}Create) -> {{ module_class }}Response:
+            """Persist a new {{ module_class }} and return the response schema."""
+            raise NotImplementedError
+
+  dependencies_py: |
+    """{{ module_class }} FastAPI Depends() factories."""
+    from __future__ import annotations
+
+    from .service import {{ module_class }}Service
+
+
+    def get_{{ module_name }}_service() -> {{ module_class }}Service:
+        """Provide a {{ module_class }}Service instance (override in tests)."""
+        return {{ module_class }}Service()
+
+  migration_stub: |
+    """Alembic migration stub — {{ module_class }} initial table.
+
+    Revision: REPLACE_ME
+    Create Date: REPLACE_ME
+    """
+    from __future__ import annotations
+
+    from alembic import op
+    import sqlalchemy as sa
+
+
+    def upgrade() -> None:
+        op.create_table(
+            "{{ module_name }}s",
+            sa.Column("id", sa.Integer(), primary_key=True),
+            sa.Column("name", sa.String(length=255), nullable=False),
+            schema="{{ db_schema }}",
+        )
+
+
+    def downgrade() -> None:
+        op.drop_table("{{ module_name }}s", schema="{{ db_schema }}")
+
+  # --- secure + paginated variant (auth dependency + limit/offset paging) ---
+
+  schemas_secure_py: |
+    """{{ module_class }} Pydantic v2 schemas (with pagination envelope)."""
+    from __future__ import annotations
+
+    from pydantic import BaseModel, ConfigDict, Field
+
+
+    class {{ module_class }}Base(BaseModel):
+        model_config = ConfigDict(from_attributes=True)
+
+        name: str
+
+
+    class {{ module_class }}Create({{ module_class }}Base):
+        pass
+
+
+    class {{ module_class }}Response({{ module_class }}Base):
+        id: int
+
+
+    class PageParams(BaseModel):
+        """Query params for limit/offset pagination."""
+
+        limit: int = Field(default=50, ge=1, le=200)
+        offset: int = Field(default=0, ge=0)
+
+
+    class {{ module_class }}Page(BaseModel):
+        """Paginated envelope for {{ module_class }} listings."""
+
+        items: list[{{ module_class }}Response]
+        total: int
+        limit: int
+        offset: int
+
+  dependencies_secure_py: |
+    """{{ module_class }} FastAPI Depends() factories — service + auth."""
+    from __future__ import annotations
+
+    from fastapi import Depends, HTTPException, status
+    from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+    from .service import {{ module_class }}Service
+
+    _bearer = HTTPBearer(auto_error=True)
+
+
+    async def get_current_user(
+        credentials: HTTPAuthorizationCredentials = Depends(_bearer),
+    ) -> str:
+        """Validate the bearer token and return the subject.
+
+        Placeholder — wire to chrysa-lib auth (JWT verification) before use.
+        """
+        token = credentials.credentials
+        if not token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Missing bearer token",
+            )
+        return token
+
+
+    def get_{{ module_name }}_service() -> {{ module_class }}Service:
+        """Provide a {{ module_class }}Service instance (override in tests)."""
+        return {{ module_class }}Service()
+
+  service_secure_py: |
+    """{{ module_class }} service — paginated listing, no HTTP/ORM imports at module level."""
+    from __future__ import annotations
+
+    from .schemas import {{ module_class }}Create, {{ module_class }}Response
+
+
+    class {{ module_class }}Service:
+        """Encapsulates all {{ module_class }} business logic."""
+
+        async def list(
+            self, *, limit: int, offset: int
+        ) -> tuple[list[{{ module_class }}Response], int]:
+            """Return a page of {{ module_class }} records and the total count."""
+            raise NotImplementedError
+
+        async def create(self, payload: {{ module_class }}Create) -> {{ module_class }}Response:
+            """Persist a new {{ module_class }} and return the response schema."""
+            raise NotImplementedError
+
+  router_secure_py: |
+    """{{ module_class }} router — auth-protected, paginated."""
+    from __future__ import annotations
+
+    from fastapi import APIRouter, Depends, status
+
+    from .dependencies import get_current_user, get_{{ module_name }}_service
+    from .schemas import (
+        {{ module_class }}Create,
+        {{ module_class }}Page,
+        {{ module_class }}Response,
+        PageParams,
+    )
+    from .service import {{ module_class }}Service
+
+    router = APIRouter(
+        prefix="{{ router_prefix }}",
+        tags=["{{ module_class }}"],
+        dependencies=[Depends(get_current_user)],
+    )
+
+
+    @router.get("", response_model={{ module_class }}Page, status_code=status.HTTP_200_OK)
+    async def list_{{ module_name }}s(
+        page: PageParams = Depends(),
+        service: {{ module_class }}Service = Depends(get_{{ module_name }}_service),
+    ) -> {{ module_class }}Page:
+        """Return a page of {{ module_class }} records."""
+        items, total = await service.list(limit=page.limit, offset=page.offset)
+        return {{ module_class }}Page(
+            items=items, total=total, limit=page.limit, offset=page.offset
+        )
+
+
+    @router.post("", response_model={{ module_class }}Response, status_code=status.HTTP_201_CREATED)
+    async def create_{{ module_name }}(
+        payload: {{ module_class }}Create,
+        service: {{ module_class }}Service = Depends(get_{{ module_name }}_service),
+    ) -> {{ module_class }}Response:
+        """Create a new {{ module_class }}."""
+        return await service.create(payload)
+
+structures:
+  fastapi_module:
+    files:
+      - path: __init__.py
+        template: init_py
+      - path: router.py
+        template: router_py
+      - path: schemas.py
+        template: schemas_py
+      - path: models.py
+        template: models_py
+      - path: service.py
+        template: service_py
+      - path: dependencies.py
+        template: dependencies_py
+
+  fastapi_module_with_migration:
+    files:
+      - path: __init__.py
+        template: init_py
+      - path: router.py
+        template: router_py
+      - path: schemas.py
+        template: schemas_py
+      - path: models.py
+        template: models_py
+      - path: service.py
+        template: service_py
+      - path: dependencies.py
+        template: dependencies_py
+      - path: migrations/versions/0001_initial_{{ module_name }}.py
+        template: migration_stub
+
+  # Auth-protected + paginated module (bearer dependency, limit/offset listing).
+  fastapi_module_secure:
+    files:
+      - path: __init__.py
+        template: init_py
+      - path: router.py
+        template: router_secure_py
+      - path: schemas.py
+        template: schemas_secure_py
+      - path: models.py
+        template: models_py
+      - path: service.py
+        template: service_secure_py
+      - path: dependencies.py
+        template: dependencies_secure_py
+      - path: migrations/versions/0001_initial_{{ module_name }}.py
+        template: migration_stub
