@@ -3,9 +3,20 @@ requires = ["setuptools>=82.0.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "project-init"
+name = "chrysa-project-init"
 version = "0.1.0"
 requires-python = ">=3.14"
+dependencies = [
+    "pydantic>=2.11",
+    "pyyaml>=6.0",
+    "typer>=0.15",
+]
+
+[project.scripts]
+project-init = "project_init.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [project.optional-dependencies]
 test = [
@@ -18,10 +29,10 @@ test = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--tb=short"
-pythonpath = ["scripts"]
+pythonpath = ["scripts", "src"]
 
 [tool.coverage.run]
-source = ["scripts"]
+source = ["scripts", "src/project_init"]
 omit = ["tests/*", "scripts/__main__.py"]
 
 [tool.coverage.report]
