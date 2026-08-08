@@ -1,23 +1,30 @@
 # makefile-tier: lib
-.PHONY: help install dev test test-cov docker-test lint format typecheck build docker-up docker-down clean pre-commit
+.PHONY: help install install-dev dev test test-cov docker-test lint format format-check typecheck build docker-up docker-down clean pre-commit ci
 
 help:
 	@echo "Available targets:"
-	@echo "  install     Install pre-commit hooks + dev dependencies"
-	@echo "  dev         Start development server / watch mode"
-	@echo "  test        Run unit tests"
-	@echo "  test-cov    Run tests with coverage report (generates coverage.xml)"
-	@echo "  lint        Run linter (ruff)"
-	@echo "  format      Auto-format code (ruff format)"
-	@echo "  typecheck   Run static type checker (mypy)"
-	@echo "  build       Build production artefact"
-	@echo "  docker-up   Start docker-compose services"
-	@echo "  docker-down Stop docker-compose services"
-	@echo "  clean       Remove generated artefacts and caches"
-	@echo "  pre-commit  Run all pre-commit checks"
+	@echo "  install      Install pre-commit hooks"
+	@echo "  install-dev  Install pre-commit hooks + dev dependencies"
+	@echo "  dev          Start development server / watch mode"
+	@echo "  test         Run unit tests"
+	@echo "  test-cov     Run tests with coverage report (generates coverage.xml)"
+	@echo "  lint         Run linter (ruff)"
+	@echo "  format       Auto-format code (ruff format)"
+	@echo "  format-check Check formatting without writing (CI)"
+	@echo "  typecheck    Run static type checker (mypy)"
+	@echo "  build        Build production artefact"
+	@echo "  docker-up    Start docker-compose services"
+	@echo "  docker-down  Stop docker-compose services"
+	@echo "  clean        Remove generated artefacts and caches"
+	@echo "  pre-commit   Run all pre-commit checks"
+	@echo "  ci           Run the full local gate (lint + pre-commit + docker-test)"
 
 install:
 	pre-commit install
+
+install-dev:
+	pre-commit install
+	@echo "Dev deps are provisioned in the container (Dockerfile.test) — see docker-test"
 
 dev:
 	@echo "No dev server — project-init is a CLI tool"
@@ -38,6 +45,9 @@ lint:
 format:
 	pre-commit run ruff-format --all-files || true
 
+format-check:
+	pre-commit run ruff-format --all-files
+
 typecheck:
 	@echo "No typecheck yet — see issues for the test plan"
 
@@ -57,6 +67,8 @@ clean:
 
 pre-commit:
 	pre-commit run --all-files
+
+ci: lint docker-test ## Run the full local gate (lint + pre-commit + docker-test)
 
 # ── Quality Gates ──────────────────────────────────────────────────────────────
 
