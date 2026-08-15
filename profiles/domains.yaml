@@ -1,0 +1,62 @@
+# STD-* domain registry - a POINTER to shared-standards, never a copy of rule text.
+#
+# This mirrors the single source of truth: shared-standards
+# `standards/annexes/GOVERNANCE.md` GV-015 (ADR D-0010). Each entry records only
+# the domain id, the home that implements it, and the rule prefix - enough for a
+# profile to *select* a domain and for a reader to *find* the rules. The rule
+# bodies live in the socle / annexes and are distributed once (GV-000/GV-001);
+# they are deliberately NOT reproduced here.
+#
+# When GV-015 changes upstream, this file is re-synced (see profiles/README.md);
+# it is a derived mirror, not an authority. Excluded from yaml-sorter to keep
+# this authored ordering and these comments.
+version: 1
+domains:
+  STD-GOV-001:
+    home: GOVERNANCE.md
+    prefix: GV-
+    summary: Governance, rule identity, ADR format, strategic pillars.
+  STD-DATA-001:
+    home: DATA-MIGRATIONS.md
+    prefix: DA-
+    summary: Data model changes and migration safety.
+  STD-OPS-001:
+    home: OBSERVABILITY-OPS.md
+    prefix: OP-
+    summary: Observability, logging, error containment, ops.
+  STD-API-001:
+    home: API-CONTRACTS.md
+    prefix: AP-
+    summary: API and inter-project contract design.
+  STD-SUPPLY-001:
+    home: CI-CD.md
+    prefix: CI-
+    summary: Supply-chain pinning and CI provenance.
+  STD-DEPLOY-001:
+    home: CI-CD.md
+    prefix: CI-
+    summary: Deployment / release promotion, build-once-promote-artefact.
+  STD-PRIVACY-001:
+    home: GOVERNANCE.md
+    prefix: GV-
+    summary: GDPR/privacy by construction, per-person data ownership.
+  STD-UX-STATE-001:
+    home: FRONTEND.md
+    prefix: FE-
+    summary: UI state survival, URL-addressable nav, API-down state, real-time.
+  STD-CONFIG-001:
+    home: socle
+    prefix: socle
+    summary: No hardcoded constants, external config through typed loaders.
+  STD-TEST-001:
+    home: TESTING.md
+    prefix: TS-
+    summary: Test levels, coverage floor, pytest-only / Vitest.
+  STD-PERF-001:
+    home: CI-CD.md
+    prefix: CI-
+    summary: Performance and cost budgets enforced in CI (CI-053).
+  STD-AI-QUALITY-001:
+    home: AGENTIC-CAPABILITIES.md
+    prefix: AG-
+    summary: AI feature evaluation, agent action governance.

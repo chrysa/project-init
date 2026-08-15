@@ -39,3 +39,11 @@ class ProjectManifest(BaseModel):
     python_version: str = "3.14"
     base_path: str = "app/api"
     modules: list[ModuleDecl] = Field(default_factory=list)
+    standards_profile: str | None = Field(
+        default=None,
+        description=(
+            "The inheritable standards profile this repo adopts (see "
+            "profiles/standards-profiles.yaml). Selects which STD-* domains apply; "
+            "resolved by StandardsProfileResolver, never a copy of rule text."
+        ),
+    )
