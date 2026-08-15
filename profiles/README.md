@@ -1,0 +1,66 @@
+# profiles
+
+**Role.** Data-only definitions of the **inheritable standards profiles** a repo
+adopts. A profile *selects* which `STD-*` governance domains apply to a repo —
+keyed by stack, runtime tier and deployment target — and resolves to a
+deterministic domain set without copying any rule text into the consumer repo.
+
+## Structure
+
+| Path                       | Purpose                                                                 |
+| -------------------------- | ----------------------------------------------------------------------- |
+| `standards-profiles.yaml`  | The profiles: `base` (abstract) + `application`, `frontend`, `library`, `cli`, `python-backend`, `config-only`. Each declares `extends`, `stack`, `runtime`, `deploy`, `domains`. |
+| `domains.yaml`             | The `STD-*` domain registry — a **pointer** to shared-standards GV-015 (domain id → home annexe + rule prefix). No rule bodies. |
+
+The typed resolver that consumes these files is
+`src/project_init/standards_profile_resolver.py`
+(`StandardsProfileResolver`), with value objects `StandardsProfile` and
+`StandardsDomain`. The CLI surfaces it as `project-init standards`.
+
+## How resolution works
+
+A repo records a `standards_profile` in its `.project-init.yaml` manifest. The
+resolver walks that profile's `extends` chain (cycle-guarded, depth-first) and
+returns the **union** of every ancestor's `domains`, deduplicated and sorted.
+Composition mirrors the template bundles (`python-fastapi = generic + python +
+fastapi`): `application` extends `python-backend` extends `base`.
+
+```
+project-init standards --profile application
+project-init standards            # uses the manifest's standards_profile
+```
+
+## Profile → axes
+
+| Profile        | stack           | runtime         | deploy             |
+| -------------- | --------------- | --------------- | ------------------ |
+| `base`         | — (abstract)    | —               | —                  |
+| `python-backend` | python-backend | container       | deployed-service   |
+| `application`  | python-backend  | container       | deployed-service   |
+| `frontend`     | react-frontend  | container       | deployed-service   |
+| `library`      | library         | exempt:lib      | published-package  |
+| `cli`          | cli             | exempt:lib      | published-package  |
+| `config-only`  | config          | exempt:config   | none               |
+
+## Should contain
+
+- YAML profile/domain definitions (data the resolver loads at runtime).
+
+## Should NOT contain
+
+- Rule text or rationale from the socle/annexes — that lives in
+  `shared-standards` and is distributed once (GV-000/GV-001). This folder holds
+  only the domain **pointers** and the selection logic's data.
+- Python code — the resolver lives in `src/project_init/` (one class per file).
+
+## Rules
+
+- `domains.yaml` is a **derived mirror** of shared-standards GV-015
+  (`standards/annexes/GOVERNANCE.md`). GV-015 is the single source of truth; when
+  it changes, re-sync this file. It is never the authority.
+- A profile only ever *selects* domains; it never enforces them (the socle,
+  pre-commit hooks and CI do). Adding a profile is additive and must not
+  duplicate an existing one — extend, don't copy (see the workspace
+  no-duplication rule).
+- Every domain id referenced by a profile must exist in `domains.yaml`
+  (asserted by `tests/test_standards_profile_resolver.py`).

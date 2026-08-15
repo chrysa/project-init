@@ -1,0 +1,103 @@
+# Inheritable standards profiles.
+#
+# A profile SELECTS which STD-* domains apply to a repo - it never copies rule
+# text (GV-000/GV-001: the socle is the single distributed artifact). Profiles
+# compose by inheritance through `extends`, exactly like the template bundles
+# (`python-fastapi = generic + python + fastapi`): a profile's resolved domain
+# set is the union of its own `domains` and every ancestor's, deduplicated.
+#
+# Each profile is keyed on the three axes from GV-011 (rule scope) and
+# STANDARDS.chrysa.md (`project_profile`, `runtime:` tier):
+#   - stack:   the technology family (python-backend, react-frontend, library, cli, config).
+#   - runtime: the deliverable / runtime tier (repos.yml `runtime:` - container | exempt:lib
+#              | exempt:native | exempt:config).
+#   - deploy:  the deployment target (deployed-service | published-package | none).
+#
+# `base` is abstract (no stack/runtime/deploy of its own) and is not selected
+# directly; every concrete profile extends it. Domain ids resolve to a home +
+# prefix through profiles/domains.yaml. Excluded from yaml-sorter to keep this
+# authored ordering and these comments.
+version: 1
+
+profiles:
+  base:
+    abstract: true
+    description: Cross-cutting domains every chrysa repo carries, whatever its stack.
+    extends: []
+    domains:
+      - STD-GOV-001
+      - STD-CONFIG-001
+
+  python-backend:
+    description: A Python/FastAPI service - the domain engine and API layer.
+    extends: [base]
+    stack: python-backend
+    runtime: container
+    deploy: deployed-service
+    domains:
+      - STD-TEST-001
+      - STD-SUPPLY-001
+      - STD-API-001
+      - STD-DATA-001
+      - STD-OPS-001
+
+  application:
+    description: >-
+      A deployed container application (full socle) - a Python backend that ships
+      as a running service with a deployment pipeline and enforced budgets.
+    extends: [python-backend]
+    stack: python-backend
+    runtime: container
+    deploy: deployed-service
+    domains:
+      - STD-DEPLOY-001
+      - STD-PERF-001
+      - STD-PRIVACY-001
+
+  frontend:
+    description: A React 19 + TypeScript frontend (SPA or served UI).
+    extends: [base]
+    stack: react-frontend
+    runtime: container
+    deploy: deployed-service
+    domains:
+      - STD-TEST-001
+      - STD-SUPPLY-001
+      - STD-API-001
+      - STD-UX-STATE-001
+      - STD-PRIVACY-001
+      - STD-PERF-001
+      - STD-DEPLOY-001
+
+  library:
+    description: An imported/distributed library (exempt:lib) published as a package.
+    extends: [base]
+    stack: library
+    runtime: exempt:lib
+    deploy: published-package
+    domains:
+      - STD-TEST-001
+      - STD-SUPPLY-001
+      - STD-API-001
+      - STD-DEPLOY-001
+
+  cli:
+    description: A Python CLI / tool distributed to consumer environments (exempt:lib).
+    extends: [base]
+    stack: cli
+    runtime: exempt:lib
+    deploy: published-package
+    domains:
+      - STD-TEST-001
+      - STD-SUPPLY-001
+      - STD-API-001
+
+  config-only:
+    description: >-
+      A config / knowledge / manifests repo with no executable runtime
+      (exempt:config) - governed and config-disciplined, but nothing to deploy or test.
+    extends: [base]
+    stack: config
+    runtime: exempt:config
+    deploy: none
+    domains: []
