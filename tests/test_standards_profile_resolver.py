@@ -63,7 +63,9 @@ def test_resolved_domain_carries_home_and_prefix_pointer() -> None:
     domains = _resolver().applicable_domains("frontend")
 
     ux_state = next(d for d in domains if d.domain_id == "STD-UX-STATE-001")
-    assert ux_state.home == "FRONTEND.md"
+    # home is the FRONTEND.md annexe; the value is generated from the canonical
+    # shared-standards registry (full annexe path), so match on the annexe name.
+    assert ux_state.home.endswith("FRONTEND.md")
     assert ux_state.prefix == "FE-"
 
 
