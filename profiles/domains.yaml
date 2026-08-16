@@ -1,62 +1,58 @@
-# STD-* domain registry - a POINTER to shared-standards, never a copy of rule text.
+# GENERATED from chrysa/shared-standards standards/domains.yaml — do not edit by hand.
 #
-# This mirrors the single source of truth: shared-standards
-# `standards/annexes/GOVERNANCE.md` GV-015 (ADR D-0010). Each entry records only
-# the domain id, the home that implements it, and the rule prefix - enough for a
-# profile to *select* a domain and for a reader to *find* the rules. The rule
-# bodies live in the socle / annexes and are distributed once (GV-000/GV-001);
-# they are deliberately NOT reproduced here.
+# Regenerate with `make sync-standards-domains`; CI runs `make check-standards-domains`
+# (scripts/sync_standards_domains.py --check) to fail on drift. The canonical GV-015
+# registry is the single source of truth (GV-000/GV-001) — this is a derived pointer
+# that carries only domain id -> home + prefix (+ summary), never rule bodies.
 #
-# When GV-015 changes upstream, this file is re-synced (see profiles/README.md);
-# it is a derived mirror, not an authority. Excluded from yaml-sorter to keep
-# this authored ordering and these comments.
+# Source is configurable via the SHARED_STANDARDS_DOMAINS env var (path or raw URL).
 version: 1
 domains:
   STD-GOV-001:
-    home: GOVERNANCE.md
+    home: standards/annexes/GOVERNANCE.md
     prefix: GV-
-    summary: Governance, rule identity, ADR format, strategic pillars.
+    summary: Standards governance & lifecycle
   STD-DATA-001:
-    home: DATA-MIGRATIONS.md
+    home: standards/annexes/DATA-MIGRATIONS.md
     prefix: DA-
-    summary: Data model changes and migration safety.
+    summary: Data, persistence & migrations
   STD-OPS-001:
-    home: OBSERVABILITY-OPS.md
+    home: standards/annexes/OBSERVABILITY-OPS.md
     prefix: OP-
-    summary: Observability, logging, error containment, ops.
+    summary: Observability & production readiness
   STD-API-001:
-    home: API-CONTRACTS.md
+    home: standards/annexes/API-CONTRACTS.md
     prefix: AP-
-    summary: API and inter-project contract design.
+    summary: API, SDK & public contracts
   STD-SUPPLY-001:
-    home: CI-CD.md
+    home: standards/annexes/CI-CD.md
     prefix: CI-
-    summary: Supply-chain pinning and CI provenance.
+    summary: Software supply-chain security
   STD-DEPLOY-001:
-    home: CI-CD.md
+    home: standards/annexes/CI-CD.md
     prefix: CI-
-    summary: Deployment / release promotion, build-once-promote-artefact.
+    summary: Deployment & artefact promotion
   STD-PRIVACY-001:
-    home: GOVERNANCE.md
+    home: standards/annexes/GOVERNANCE.md
     prefix: GV-
-    summary: GDPR/privacy by construction, per-person data ownership.
+    summary: Privacy & personal data
   STD-UX-STATE-001:
-    home: FRONTEND.md
+    home: standards/annexes/FRONTEND.md
     prefix: FE-
-    summary: UI state survival, URL-addressable nav, API-down state, real-time.
+    summary: Behavioural UI states
   STD-CONFIG-001:
     home: socle
     prefix: socle
-    summary: No hardcoded constants, external config through typed loaders.
+    summary: Configuration & feature flags
   STD-TEST-001:
-    home: TESTING.md
+    home: standards/annexes/TESTING.md
     prefix: TS-
-    summary: Test levels, coverage floor, pytest-only / Vitest.
+    summary: Risk-based testing
   STD-PERF-001:
-    home: CI-CD.md
+    home: standards/annexes/CI-CD.md
     prefix: CI-
-    summary: Performance and cost budgets enforced in CI (CI-053).
+    summary: Performance & cost budgets
   STD-AI-QUALITY-001:
-    home: AGENTIC-CAPABILITIES.md
+    home: standards/annexes/AGENTIC-CAPABILITIES.md
     prefix: AG-
-    summary: AI feature evaluation, agent action governance.
+    summary: AI feature quality
