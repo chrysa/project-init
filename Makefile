@@ -1,5 +1,5 @@
 # makefile-tier: lib
-.PHONY: help install install-dev dev test test-cov docker-test lint format format-check typecheck build docker-up docker-down clean pre-commit ci
+.PHONY: help install install-dev dev test test-cov docker-test lint format format-check typecheck build docker-up docker-down clean pre-commit ci sync-standards-domains check-standards-domains
 
 help:
 	@echo "Available targets:"
@@ -18,6 +18,8 @@ help:
 	@echo "  clean        Remove generated artefacts and caches"
 	@echo "  pre-commit   Run all pre-commit checks"
 	@echo "  ci           Run the full local gate (lint + pre-commit + docker-test)"
+	@echo "  sync-standards-domains   Regenerate profiles/domains.yaml from shared-standards"
+	@echo "  check-standards-domains  Fail if profiles/domains.yaml has drifted (CI)"
 
 install:
 	pre-commit install
@@ -68,7 +70,15 @@ clean:
 pre-commit:
 	pre-commit run --all-files
 
-ci: lint docker-test ## Run the full local gate (lint + pre-commit + docker-test)
+ci: lint check-standards-domains docker-test ## Run the full local gate (lint + drift + pre-commit + docker-test)
+
+# ── Standards domain registry (generated from shared-standards) ─────────────────
+
+sync-standards-domains: ## Regenerate profiles/domains.yaml from the shared-standards registry
+	@python scripts/sync_standards_domains.py
+
+check-standards-domains: ## Fail if profiles/domains.yaml has drifted from the source (CI)
+	@python scripts/sync_standards_domains.py --check
 
 # ── Quality Gates ──────────────────────────────────────────────────────────────
 
