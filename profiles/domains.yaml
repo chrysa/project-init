@@ -1,0 +1,58 @@
+# GENERATED from chrysa/shared-standards standards/domains.yaml — do not edit by hand.
+#
+# Regenerate with `make sync-standards-domains`; CI runs `make check-standards-domains`
+# (scripts/sync_standards_domains.py --check) to fail on drift. The canonical GV-015
+# registry is the single source of truth (GV-000/GV-001) — this is a derived pointer
+# that carries only domain id -> home + prefix (+ summary), never rule bodies.
+#
+# Source is configurable via the SHARED_STANDARDS_DOMAINS env var (path or raw URL).
+version: 1
+domains:
+  STD-GOV-001:
+    home: standards/annexes/GOVERNANCE.md
+    prefix: GV-
+    summary: Standards governance & lifecycle
+  STD-DATA-001:
+    home: standards/annexes/DATA-MIGRATIONS.md
+    prefix: DA-
+    summary: Data, persistence & migrations
+  STD-OPS-001:
+    home: standards/annexes/OBSERVABILITY-OPS.md
+    prefix: OP-
+    summary: Observability & production readiness
+  STD-API-001:
+    home: standards/annexes/API-CONTRACTS.md
+    prefix: AP-
+    summary: API, SDK & public contracts
+  STD-SUPPLY-001:
+    home: standards/annexes/CI-CD.md
+    prefix: CI-
+    summary: Software supply-chain security
+  STD-DEPLOY-001:
+    home: standards/annexes/CI-CD.md
+    prefix: CI-
+    summary: Deployment & artefact promotion
+  STD-PRIVACY-001:
+    home: standards/annexes/GOVERNANCE.md
+    prefix: GV-
+    summary: Privacy & personal data
+  STD-UX-STATE-001:
+    home: standards/annexes/FRONTEND.md
+    prefix: FE-
+    summary: Behavioural UI states
+  STD-CONFIG-001:
+    home: socle
+    prefix: socle
+    summary: Configuration & feature flags
+  STD-TEST-001:
+    home: standards/annexes/TESTING.md
+    prefix: TS-
+    summary: Risk-based testing
+  STD-PERF-001:
+    home: standards/annexes/CI-CD.md
+    prefix: CI-
+    summary: Performance & cost budgets
+  STD-AI-QUALITY-001:
+    home: standards/annexes/AGENTIC-CAPABILITIES.md
+    prefix: AG-
+    summary: AI feature quality

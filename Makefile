@@ -1,23 +1,32 @@
 # makefile-tier: lib
-.PHONY: help install dev test test-cov docker-test lint format typecheck build docker-up docker-down clean pre-commit
+.PHONY: help install install-dev dev test test-cov docker-test lint format format-check typecheck build docker-up docker-down clean pre-commit ci sync-standards-domains check-standards-domains
 
 help:
 	@echo "Available targets:"
-	@echo "  install     Install pre-commit hooks + dev dependencies"
-	@echo "  dev         Start development server / watch mode"
-	@echo "  test        Run unit tests"
-	@echo "  test-cov    Run tests with coverage report (generates coverage.xml)"
-	@echo "  lint        Run linter (ruff)"
-	@echo "  format      Auto-format code (ruff format)"
-	@echo "  typecheck   Run static type checker (mypy)"
-	@echo "  build       Build production artefact"
-	@echo "  docker-up   Start docker-compose services"
-	@echo "  docker-down Stop docker-compose services"
-	@echo "  clean       Remove generated artefacts and caches"
-	@echo "  pre-commit  Run all pre-commit checks"
+	@echo "  install      Install pre-commit hooks"
+	@echo "  install-dev  Install pre-commit hooks + dev dependencies"
+	@echo "  dev          Start development server / watch mode"
+	@echo "  test         Run unit tests"
+	@echo "  test-cov     Run tests with coverage report (generates coverage.xml)"
+	@echo "  lint         Run linter (ruff)"
+	@echo "  format       Auto-format code (ruff format)"
+	@echo "  format-check Check formatting without writing (CI)"
+	@echo "  typecheck    Run static type checker (mypy)"
+	@echo "  build        Build production artefact"
+	@echo "  docker-up    Start docker-compose services"
+	@echo "  docker-down  Stop docker-compose services"
+	@echo "  clean        Remove generated artefacts and caches"
+	@echo "  pre-commit   Run all pre-commit checks"
+	@echo "  ci           Run the full local gate (lint + pre-commit + docker-test)"
+	@echo "  sync-standards-domains   Regenerate profiles/domains.yaml from shared-standards"
+	@echo "  check-standards-domains  Fail if profiles/domains.yaml has drifted (CI)"
 
 install:
 	pre-commit install
+
+install-dev:
+	pre-commit install
+	@echo "Dev deps are provisioned in the container (Dockerfile.test) — see docker-test"
 
 dev:
 	@echo "No dev server — project-init is a CLI tool"
@@ -37,6 +46,9 @@ lint:
 
 format:
 	pre-commit run ruff-format --all-files || true
+
+format-check:
+	pre-commit run ruff-format --all-files
 
 typecheck:
 	@echo "No typecheck yet — see issues for the test plan"
@@ -58,10 +70,20 @@ clean:
 pre-commit:
 	pre-commit run --all-files
 
+ci: lint check-standards-domains docker-test ## Run the full local gate (lint + drift + pre-commit + docker-test)
+
+# ── Standards domain registry (generated from shared-standards) ─────────────────
+
+sync-standards-domains: ## Regenerate profiles/domains.yaml from the shared-standards registry
+	@python scripts/sync_standards_domains.py
+
+check-standards-domains: ## Fail if profiles/domains.yaml has drifted from the source (CI)
+	@python scripts/sync_standards_domains.py --check
+
 # ── Quality Gates ──────────────────────────────────────────────────────────────
 
 quality-gate-baseline: ## Record baseline metrics for regression detection
-	@python3 scripts/quality_gate.py baseline
+	@quality-gate-baseline
 
 quality-gate-verify: ## Verify no regression since baseline
-	@python3 scripts/quality_gate.py verify
+	@quality-gate-verify

@@ -1,26 +1,38 @@
 [build-system]
-requires = ["setuptools>=82.0.1", "wheel"]
+requires = ["setuptools>=84.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "project-init"
+name = "chrysa-project-init"
 version = "0.1.0"
 requires-python = ">=3.14"
+dependencies = [
+    "pydantic>=2.13.4",
+    "pyyaml>=6.0.3",
+    "typer>=0.27.1",
+]
+
+[project.scripts]
+project-init = "project_init.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [project.optional-dependencies]
 test = [
-    "pytest>=9.0.3",
+    "chrysa-quality-gate @ git+ssh://git@github.com/chrysa/chrysa-lib.git@v0.3.0#subdirectory=packages/python/quality-gate",
+    "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
-    "pytest-mock>=3.14",
+    "pytest-mock>=3.15.1",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--tb=short"
-pythonpath = ["scripts"]
+pythonpath = ["scripts", "src"]
 
 [tool.coverage.run]
-source = ["scripts"]
+source = ["scripts", "src/project_init"]
 omit = ["tests/*", "scripts/__main__.py"]
 
 [tool.coverage.report]
