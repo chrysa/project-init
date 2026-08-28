@@ -85,6 +85,13 @@ Each type maps to a template bundle in `project_init/templates/<type>/`.
 
 ### 5. Extensibility: template bundles + hooks
 
+> **Amended by [ADR-002](ADR-002-consume-shared-repos.md).** The template bundles
+> below do **not** re-implement app/module generation, Makefiles, CI, or hooks:
+> those delegate to the published shared tools (`fastapi-app-forge`,
+> `django-app-forge`, `base-makefile`, `chrysa/github-actions`,
+> `chrysa/pre-commit-tools`, `chrysa-lib`). Bundles carry only glue and the
+> templates no shared repo owns.
+
 Two extension points:
 
 **Template bundles** (`project_init/templates/<type>/`):

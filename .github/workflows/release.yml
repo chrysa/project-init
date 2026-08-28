@@ -11,6 +11,6 @@ on:
 
 jobs:
     call:
-        uses: chrysa/github-actions/.github/workflows/release.yml@v1.4.4
+        uses: chrysa/github-actions/.github/workflows/release.yml@v1.8.1
         secrets:
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
