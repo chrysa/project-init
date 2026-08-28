@@ -18,7 +18,6 @@ context to stdout, which Claude Code injects before the turn.
 """
 import sys
 import re
-import json
 import argparse
 
 # --- fast triage: is this prompt worth optimizing at all? ---
