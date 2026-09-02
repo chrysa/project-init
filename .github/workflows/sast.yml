@@ -1,0 +1,19 @@
+---
+name: SAST
+
+on:
+    push:
+        branches: [main, develop, "feat/**", "feature/**", "fix/**", "release/**"]
+    pull_request:
+        branches: [main, develop, master]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/sast.yml@v1.9.0
