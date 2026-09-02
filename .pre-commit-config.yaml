@@ -114,6 +114,12 @@ repos:
     rev: v2.13.1-beta
     hooks:
       - id: hadolint-docker
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.10.1
+    hooks:
+      - id: pip-audit
+        stages:
+          - pre-push
   - repo: https://github.com/chrysa/guideline-checker
     rev: v1.30.16
     hooks:
