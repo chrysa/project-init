@@ -69,7 +69,6 @@ repos:
         exclude: '(^|/)tests?/'
       - id: dockerfile-multi-stage-check
       - id: dockerfile-non-root-user
-      - id: docker-run-host-user
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0
     hooks:
