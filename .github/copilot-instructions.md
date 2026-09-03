@@ -242,6 +242,7 @@ Full lifecycle: `chrysa/shared-standards/EXECUTION_STANDARD.md §5`
 - A compose file is minimal — declare only what the stack needs, default the rest
 - Dev stage must hot-reload
 - Local dev runs the code in-container, live, in debug mode — never the production server
+- Default to dev mode when starting an app locally — any other mode only when explicitly asked
 - `.dockerignore` mandatory & exhaustive
 - Container-runtime policy
 
