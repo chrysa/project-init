@@ -43,6 +43,10 @@ Thumbs.db
 .ci-backup-*/
 .gitnexus
 
+# Generated audit reports (never a CI baseline — never commit)
+*-report.html
+guideline-report.html
+
 # CodeGraph (local index — never commit)
 .codegraph/
 
