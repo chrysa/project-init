@@ -1,0 +1,49 @@
+{
+  "adrs": [
+    "ADR-001-architecture.md",
+    "ADR-002-consume-shared-repos.md"
+  ],
+  "contracts": [
+    "schemas",
+    "standards"
+  ],
+  "ddd_level": "(not available)",
+  "dependencies": {
+    "python": [
+      "chrysa-quality-gate",
+      "pydantic",
+      "pytest",
+      "pytest-cov",
+      "pytest-mock",
+      "pyyaml",
+      "typer"
+    ]
+  },
+  "depends_on_shared_standards": true,
+  "description": "`project-init` rationalizes project creation, enforces standards from day one, and automates the repetitive setup work that every new repository needs.",
+  "entry_points": [
+    "project-init"
+  ],
+  "key_directories": [
+    ".claude",
+    ".github",
+    "ai",
+    "decisions",
+    "docs",
+    "examples",
+    "makefiles",
+    "postmortems",
+    "profiles",
+    "prompts",
+    "schemas",
+    "scripts",
+    "src",
+    "standards",
+    "templates",
+    "tests",
+    "workflows"
+  ],
+  "name": "chrysa-project-init",
+  "profiles": [],
+  "schema": "chrysa.context-map/1"
+}
