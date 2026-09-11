@@ -111,7 +111,6 @@ chrysa-project-init — technical digest
     action-check.yml
     approved-label.yml
     auto-assign.yml
-    auto-update-pre-commit.yml
     ci.yml
     dependabot-auto-merge.yml
     dependencies.yml
@@ -210,6 +209,7 @@ schemas/
   user.schema.json
 scripts/
   README.md
+  gen_context_files.py
   quality_gate.py
   sync_standards_domains.py
 sonar-project.properties
@@ -282,6 +282,7 @@ examples/perfect_schema.py — EXAMPLE — canonical pattern, copy & adapt.
 examples/perfect_serializer.py — EXAMPLE — canonical pattern, copy & adapt.
 examples/perfect_service.py — EXAMPLE — canonical pattern, copy & adapt.
 examples/perfect_viewset.py — EXAMPLE — canonical pattern, copy & adapt.
+scripts/gen_context_files.py — Generate the standardised per-repo context files from the repo's own content.
 scripts/quality_gate.py
 scripts/sync_standards_domains.py — Generate ``profiles/domains.yaml`` from the shared-standards domain registry.
 src/project_init/__init__.py — project-init — orchestrator that scaffolds chrysa repos from shared tools.
