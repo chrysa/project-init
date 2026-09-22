@@ -88,6 +88,13 @@ repos:
     pass_filenames: false
     stages:
     - pre-push
+  - id: claude-config-drift
+    name: claude config drift (advisory)
+    language: system
+    entry: node .claude/hooks/claude-config-drift.cjs
+    always_run: true
+    pass_filenames: false
+    verbose: true
 - repo: https://github.com/gitleaks/gitleaks
   rev: v8.30.1
   hooks:
