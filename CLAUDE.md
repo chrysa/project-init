@@ -53,6 +53,21 @@ Deviations from the standard require a documented ADR.
 - Add repository-specific architecture, operational constraints, or domain rules here when needed.
 - If this repository needs extra Claude skills, add them under `.claude/skills/`.
 
+## Documentation map (root docs)
+
+Generated docs-pass records at the repo root (facts tagged FACT/INFERENCE/UNKNOWN):
+
+- `PRD.md` — product intent, users, product requirements, scope.
+- `ARCHITECTURE.md` — stack, components (`src/project_init/`), delegation boundary.
+- `REQUIREMENTS.md` — REQ-PROD/REQ-TECH traceability matrix (implemented vs planned).
+- `TESTING.md` — how tests run (`make docker-test`/`ci`), coverage, CI jobs.
+- `SECURITY.md` — secret-scan result, attack surface, owner follow-ups.
+- `ROADMAP.md` — done vs planned (issues #1–#9), ADR-002 gates.
+
+Normative design records: `docs/adr/ADR-001-architecture.md`,
+`docs/adr/ADR-002-consume-shared-repos.md` (ADR wins on conflict). Most files
+under `docs/` are `status: stub` placeholders.
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
