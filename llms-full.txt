@@ -83,6 +83,8 @@ chrysa-project-init — technical digest
       SKILL.md
     plan/
       SKILL.md
+    rollout-status/
+      SKILL.md
     spec/
       SKILL.md
     standards-authoring/
@@ -95,6 +97,7 @@ chrysa-project-init — technical digest
       SKILL.md
   thresholds.json
 .editorconfig
+.env.example
 .gitattributes
 .github/
   CODEOWNERS
