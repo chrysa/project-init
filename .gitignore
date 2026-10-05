@@ -65,3 +65,11 @@ sys
 .claude/state/
 .claude/worktrees/
 .claude/hooks/*-state.json
+
+.claude-plugin-setup-report.md
+
+# ai-lint: keep secrets and local config out of git
+.env.*
+!.env.example
+secrets/
+CLAUDE.local.md
