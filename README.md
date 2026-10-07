@@ -33,6 +33,7 @@ Every new project in the ecosystem needs the same set of things:
 | Backend API    | Planned    |
 | Automation/CLI | Planned    |
 | Tool/hook repo | Planned    |
+| Unity 6 game   | Manual flow — [`workflows/unity-project-flow.md`](workflows/unity-project-flow.md) |
 
 ## Architecture
 
