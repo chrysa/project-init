@@ -1,141 +1,19 @@
-# project-init — Copilot Instructions
+---
+name: skills
+description: "Procedure: Skills. Use when this procedure is needed."
+---
 
-<!-- @[claude-sonnet-4] -->
+Shared skills from `shared-standards/.claude/skills/`:
 
-## Project purpose
+- `ui-ux/SKILL.md` — UX/UI/ergonomics across ALL surfaces (web, CLI, VS Code, Discord, desktop, game, agent) + WCAG 2.1 AA + dark mode + i18n FR+EN (load when building any human-facing surface)
 
-`project-init` is the project bootstrapper for the chrysa ecosystem.
-It generates consistent, fully-configured repository scaffolds for new projects,
-eliminating manual repetitive setup and enforcing standards from day one.
 
-## What it generates
+<!-- chrysa:standards:start · managed by distribute-standards.sh · DO NOT EDIT -->
+# chrysa — Transverse Standards (core)
 
-Each generated project includes:
-- CI/CD (GitHub Actions workflows from `chrysa/shared-standards`)
-- Pre-commit configuration (using `chrysa/pre-commit-tools` hooks)
-- Makefile (from `Forge-Stack-Workshop/base-makefile`)
-- Dockerfile + docker-compose skeleton
-- Dependabot configuration
-- SonarCloud CI integration (never `sonar-project.properties`)
-- GitHub labels, issue templates, PR template
-- README with badges
-- `.gitignore` (Python or Node variant from `chrysa/shared-standards/templates/`)
-- VS Code settings
-- GitHub Copilot instructions (from `chrysa/shared-standards/copilot-instructions/base.md`)
-- Claude Code configuration (hooks from `.claude/hooks/`, settings.json)
-- `CLAUDE.md` (from `chrysa/shared-standards/templates/CLAUDE.md`)
-- Notion project bootstrap (when relevant)
+> The **slim always-on core**. The canonical, tool-agnostic source of truth is `standards/STANDARDS.chrysa.md`; the normative annexes live under `standards/annexes/`. Each rule below is a one-line pointer — its full text lives in the per-domain file named beside the heading (`standards/rules/<domain>.md`), read on demand.
 
-## Architecture constraints
-
-- `project-init` reads templates from `chrysa/shared-standards` (not embedded copies)
-- Templates must be fetched at run time, not bundled statically
-- Generated output must be idempotent: running twice must not corrupt a repo
-- All project types (Python, React, backend API, CLI) share the same base scaffold
-  with type-specific additions on top
-
-## Supported project types
-
-| Type | Status |
-|------|--------|
-| Python service/CLI | Planned |
-| React app | Planned |
-| Backend FastAPI | Planned |
-| Tool/hook library | Planned |
-| Automation/script | Planned |
-
-## Development
-
-```bash
-# Run tests
-pytest
-
-# Run pre-commit
-pre-commit run --all-files
-
-# Generate a test project (dry-run)
-python -m project_init --dry-run --type python --name test-scaffold
-```
-
-## Execution Standard
-
-All generated projects must comply with `chrysa/shared-standards/EXECUTION_STANDARD.md`.
-Fetch the standard at runtime — never embed a copy.
-
-### §1 — Required Makefile targets
-
-Every generated Makefile must include all 13 targets (names are invariant):
-
-| Target | Description |
-|--------|-------------|
-| `help` | Print all available targets with descriptions |
-| `install` | Install all dev dependencies (venv, node_modules…) |
-| `dev` | Start development server / watch mode |
-| `test` | Run unit tests |
-| `test-cov` | Run tests with coverage (generates `coverage.xml`) |
-| `lint` | Run linter (ruff / eslint / golangci-lint…) |
-| `format` | Auto-format code (ruff format / prettier…) |
-| `typecheck` | Run static type checker |
-| `build` | Build production artefact (Docker image / dist) |
-| `docker-up` | Start docker-compose services |
-| `docker-down` | Stop docker-compose services |
-| `clean` | Remove generated artefacts and caches |
-| `pre-commit` | Run pre-commit hooks on all files |
-
-### §2 — Directory structure
-
-Every generated repo must include at minimum:
-- `.github/workflows/` with `ci-*.yml`, `release.yml`, `pages.yml`
-- `.github/PULL_REQUEST_TEMPLATE.md` and `labeler.yml`
-- `docs/index.md`
-- `CLAUDE.md`, `CHANGELOG.md`, `cliff.toml`, `GitVersion.yml`
-- `Makefile`, `README.md`
-
-Full spec: `chrysa/shared-standards/EXECUTION_STANDARD.md §2`
-
-### §4 — Testing requirements
-
-- Minimum 80% line coverage on all new code
-- Test names: `test_<unit>_when_<condition>_should_<expected>`
-- `coverage.xml` generated on every CI run
-
-### §5 — CI/CD lifecycle
-
-Generated `ci-*.yml` must run in order: lint → typecheck → test-cov (with coverage.xml upload).
-Full lifecycle: `chrysa/shared-standards/EXECUTION_STANDARD.md §5`
-
-## Canonical Templates & Shared Tooling
-
-### React applications
-- All new React apps **must** be bootstrapped from `Forge-Stack-Workshop/react-app-generator`.
-- Never scaffold from scratch or from `create-react-app`/`vite` directly.
-
-### Makefiles
-- All project Makefiles **must** extend or be derived from `Forge-Stack-Workshop/base-makefile`.
-- Do not duplicate targets that already exist in the base — inherit instead.
-
-### Pre-commit hooks
-- If a required hook is missing from `chrysa/pre-commit-tools`, **open an issue** on that repo describing the hook needed before proceeding.
-- In the requesting repo, open a matching issue/PR and mark it as dependent (`Depends on chrysa/pre-commit-tools#<N>`).
-- Do not implement a workaround locally — wait for the hook to land in the shared repo.
-
-### Issue resolution automation (desired workflow)
-- When a blocking issue is opened (e.g. missing hook, missing template), an agent should:
-  1. Analyse the issue and propose a solution on the upstream repo.
-  2. Once the solution is validated (human approval), automatically unblock the dependent issue/PR in the requesting repo.
-- This workflow is aspirational — track automation gaps as issues on the relevant repos.
-
-## Related
-
-- `chrysa/shared-standards` — source of all reusable templates and hooks (incl. EXECUTION_STANDARD.md)
-- `Forge-Stack-Workshop/base-makefile` — Makefile templates
-- `Forge-Stack-Workshop/react-app-generator` — React scaffold reference
-- `chrysa/github-actions` — reusable CI action definitions
-
-<!-- chrysa:standards-copilot:start · generated · DO NOT EDIT -->
-## chrysa standards (generated)
-
-> The same rules as `CLAUDE.md`, for GitHub Copilot. Detail loads on demand from `standards/rules/<domain>.md`; the canon is `standards/STANDARDS.chrysa.md`.
+**Where an annexe and the canon disagree, the canon wins.**
 
 ### Governance, language & compliance · `standards/rules/governance.md`
 - Normative annexes
@@ -221,6 +99,14 @@ Full lifecycle: `chrysa/shared-standards/EXECUTION_STANDARD.md §5`
 - Quality gates
 - Error handling pattern (all automations)
 
+### Product surfaces · `standards/rules/product.md`
+- A public web surface is legally compliant, consent-respecting, and operable — before it ships
+- Setup wizard & config panel
+- A game is DRM-free and fully playable solo offline
+- Every product that is operated ships a management backoffice
+- If a user can supply a file, the product accepts an upload
+- A floating assistant where it earns its place — never as decoration
+
 ### Backend Python · `standards/rules/backend-python.md`
 - Python packaging — `pyproject.toml` is the single source of truth
 - Python is written object-oriented, one class per file
@@ -250,13 +136,6 @@ Full lifecycle: `chrysa/shared-standards/EXECUTION_STANDARD.md §5`
 - `.dockerignore` mandatory & exhaustive
 - Container-runtime policy
 
-### Product surfaces · `standards/rules/product.md`
-- Setup wizard & config panel
-- A game is DRM-free and fully playable solo offline
-- Every product that is operated ships a management backoffice
-- If a user can supply a file, the product accepts an upload
-- A floating assistant where it earns its place — never as decoration
-
 ### Design system · `standards/rules/design.md`
 - Design system
 
@@ -268,4 +147,7 @@ Full lifecycle: `chrysa/shared-standards/EXECUTION_STANDARD.md §5`
 - Release & changelog config (canonical)
 - GitHub Actions (reuse first · custom actions centralised · thin workflows)
 - Pre-commit & git hooks (native, via pre-commit.com — never wrapped in make)
-<!-- chrysa:standards-copilot:end -->
+
+### Local AI orchestration & local-first · `standards/rules/ai-orchestration.md`
+- AI orchestration & local-first
+<!-- chrysa:standards:end -->
