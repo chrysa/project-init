@@ -56,6 +56,18 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-compact.sh"
+            ],
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -96,6 +108,19 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/read_guard.py"
+            ],
+            "timeout": 10
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -114,6 +139,20 @@
           {
             "type": "command",
             "command": "python3 .claude/ape/ape_hook.py --spec .claude/ape/ape-transform-v2.md"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-context.sh"
+            ],
+            "timeout": 10
           }
         ]
       }
@@ -226,5 +265,6 @@
       "Read(**/*.min.js)",
       "Read(**/*.map)"
     ]
-  }
+  },
+  "model": "haiku"
 }
