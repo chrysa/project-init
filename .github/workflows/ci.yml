@@ -53,6 +53,11 @@ jobs:
         steps:
             - uses: actions/checkout@v7.0.1
 
+            - name: Load the chrysa-lib deploy key
+              uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
+              with:
+                  ssh-private-key: ${{ secrets.CHRYSA_LIB_DEPLOY_KEY }}
+
             - name: Run tests via Docker
               run: make docker-test
 
