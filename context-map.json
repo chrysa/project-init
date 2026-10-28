@@ -10,7 +10,6 @@
   "ddd_level": "(not available)",
   "dependencies": {
     "python": [
-      "chrysa-quality-gate",
       "pydantic",
       "pytest",
       "pytest-cov",
