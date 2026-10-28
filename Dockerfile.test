@@ -8,12 +8,6 @@ RUN pip install --only-binary :all: \
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git openssh-client \
     && rm -rf /var/lib/apt/lists/*
-# Pin GitHub's published ed25519 host key instead of trusting whatever ssh-keyscan returns.
-RUN mkdir -p -m 0700 /root/.ssh \
-    && ssh-keyscan -t ed25519 github.com > /root/.ssh/known_hosts 2>/dev/null \
-    && ssh-keygen -lf /root/.ssh/known_hosts | grep -q "SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU"
-# Private dependency: fetched over the forwarded ssh agent, no key is stored in a layer.
-RUN --mount=type=ssh pip install "chrysa-quality-gate @ git+ssh://git@github.com/chrysa/chrysa-lib.git@v0.3.0#subdirectory=packages/python/quality-gate"
 
 FROM deps AS test
 # Copy only necessary files to avoid inadvertently adding sensitive data

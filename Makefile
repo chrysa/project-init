@@ -35,7 +35,7 @@ test:
 	@echo "No tests yet — run docker-test for CI-compatible tests"
 
 docker-test: ## Run tests inside Docker (CI-compatible)
-	DOCKER_BUILDKIT=1 docker build --ssh default -f Dockerfile.test -t project-init-test .
+	DOCKER_BUILDKIT=1 docker build -f Dockerfile.test -t project-init-test .
 	docker run --rm project-init-test
 
 test-cov:
@@ -83,7 +83,7 @@ check-standards-domains: ## Fail if profiles/domains.yaml has drifted from the s
 # ── Quality Gates ──────────────────────────────────────────────────────────────
 
 quality-gate-baseline: ## Record baseline metrics for regression detection
-	@quality-gate-baseline
+	@python3 scripts/quality_gate.py baseline
 
 quality-gate-verify: ## Verify no regression since baseline
-	@quality-gate-verify
+	@python3 scripts/quality_gate.py verify
