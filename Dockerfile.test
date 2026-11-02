@@ -22,6 +22,8 @@ COPY src/ ./src/
 COPY templates/ ./templates/
 COPY profiles/ ./profiles/
 COPY tests/ ./tests/
+# pyproject.toml carries the pytest and coverage settings (omit list).
+COPY pyproject.toml ./
 # Run as non-root user
 RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
