@@ -1,76 +1,84 @@
-# ARCHITECTURE — project-init
+# Architecture — project-init
 
-> Claim tags: **FACT** / **INFERENCE** / **UNKNOWN** / **PROPOSAL**. The
-> normative design records are [docs/adr/ADR-001-architecture.md](docs/adr/ADR-001-architecture.md)
-> and [docs/adr/ADR-002-consume-shared-repos.md](docs/adr/ADR-002-consume-shared-repos.md);
-> where this file and an ADR disagree, the ADR wins.
+## Purpose
 
-## Stack (FACT)
+`project-init` is the chrysa ecosystem's project bootstrap and initializer. Per the
+transverse standards (`architecture.md`: "Repo provenance — every code repo depends on
+`project-init`"), it is the **canonical repo every code repo depends on**: it rationalizes
+project creation, enforces shared standards from day one, and automates the repetitive
+setup every new repository needs (CI/CD, pre-commit, Makefile, Docker, Claude/Copilot
+config, Notion bootstrap, versioning).
 
-- Language: **Python 3.14** (bytecode `cpython-314` present; `pyproject.toml`).
-- CLI framework: **typer** (`src/project_init/cli.py`).
-- Data modelling: **pydantic** value objects (`frozen`, `extra="forbid"`).
-- Config parsing: **pyyaml**.
-- Packaging: `pyproject.toml`, distribution name `chrysa-project-init`, console
-  entry point `project-init = project_init.cli:app`.
-- Dev/test deps provisioned in a container (`Dockerfile.test`), not on the host.
+Its design principle is **orchestration by delegation**: `project-init` owns *what* a
+chrysa repo should look like (structure data, profile-to-domain selection) and delegates
+the actual rendering to shared engines (e.g. `fastapi-app-generator`), never re-implementing
+them (see `docs/adr/ADR-002-consume-shared-repos.md`).
 
-## Design principle (FACT — ADR-002)
+Status: early phase. The CLI currently scaffolds FastAPI modules and resolves standards
+profiles; the broader multi-type generation (Python service, React app, etc.) is planned.
 
-Orchestrator, not generator. `project-init` owns *what* a chrysa module looks
-like (the canonical structure) and the *manifest → tool-YAML → invoke* wiring;
-the consumed tools own the file templates and generation logic.
+## Stack
 
-## Components (FACT — src/project_init/)
+- Python `>=3.14` (packaging via `pyproject.toml`, setuptools build backend).
+- Runtime deps: `typer` (CLI), `pydantic` v2 (manifest models), `pyyaml` (config/data).
+- Test deps: `pytest`, `pytest-cov`, `pytest-mock`, plus `chrysa-quality-gate`
+  (a git+ssh dependency from `chrysa/chrysa-lib`).
+- Tooling: Ruff (lint/format), mypy (typecheck), pre-commit, cliff.toml (changelog),
+  GitVersion, SonarQube. Tests run in Docker via `Dockerfile.test` (Python 3.14-slim).
 
-| Module | Role |
-|--------|------|
-| `cli.py` | typer entry point. Parses args, loads the manifest, delegates. Commands: `init`, `list-types`, `standards`. No business logic. |
-| `manifest.py` | `ProjectManifest` / `ModuleSpec` — parses `.project-init.yaml`; models only the fields the FastAPI slice needs today. |
-| `forge_adapter.py` | `ForgeAdapter` / `ForgeError` — merges manifest modules into the canonical forge structures document and invokes the `fastapi-app-generator` CLI via `subprocess`. |
-| `standards_profile.py` | `StandardsProfile` — one inheritable profile parsed from YAML; selects domains and composes via `extends`. |
-| `standards_profile_resolver.py` | `StandardsProfileResolver` / `ProfileError` — walks the `extends` chain (depth-first, cycle-guarded) and returns the deterministic union of applicable `STD-*` domains. |
-| `standards_domain.py` | `StandardsDomain` — a pointer to a domain's home annexe + rule prefix (GV-015 correspondence). Rule bodies are never reproduced (GV-000/GV-001). |
+## Layout
 
-## Data / contracts (FACT)
+- `src/project_init/` — the package (orchestrator):
+  - `cli.py` — Typer command surface, thin (parse + delegate, no business logic).
+  - `manifest.py` — `ProjectManifest` / module declarations parsed from `.project-init.yaml`.
+  - `forge_adapter.py` — `ForgeAdapter`, drives the FastAPI forge engine (owns no rendering).
+  - `standards_domain.py`, `standards_profile.py`, `standards_profile_resolver.py` —
+    resolve a repo's standards profile to the set of `STD-*` domains that apply.
+- `scripts/` — helper scripts (e.g. quality-gate, standards-domain sync).
+- `profiles/` — `standards-profiles.yaml`, `domains.yaml` (profile → domain data,
+  synced from shared-standards).
+- `templates/` — structure *data* for generated projects (e.g. `fastapi/structures.yaml`).
+- `tests/` — pytest suites plus scenario catalogues (edge-cases, e2e, regression `.md`).
+- `docs/`, `decisions/`, `postmortems/`, `schemas/`, `workflows/`, `ai/`, `prompts/`,
+  `examples/` — standardized documentation structure (many files are `status: stub`).
 
-- `.project-init.yaml` — the manifest; canonical record of what a repo opted into
-  (ADR-001 §2). Carries `standards_profile`, `modules[]`, and (per ADR) the tool
-  revisions a repo was built against.
-- `profiles/standards-profiles.yaml` — inheritable profiles keyed on
-  stack / runtime / deploy axes (GV-011); `base` is abstract.
-- `profiles/domains.yaml` — the `STD-*` domain registry (generated from
-  `shared-standards`; drift-checked in CI via `make check-standards-domains`).
-- `templates/fastapi/structures.yaml` — the canonical FastAPI module structure
-  the forge renders.
-- `schemas/*.schema.json` — JSON Schema data-contract examples (user, project,
-  payment). **INFERENCE:** reference material, not wired into the CLI.
+## Entrypoints
 
-## Control flow
+- Console script `project-init` → `project_init.cli:app` (declared in `pyproject.toml`).
+- CLI commands (from `cli.py`):
+  - `init [PATH] [--dry-run]` — scaffold a project's FastAPI modules via the forge adapter.
+  - `list-types` — print supported project types.
+  - `standards [PATH] [--profile NAME]` — print the `STD-*` domains that apply to a
+    repo's standards profile (selection only; rules stay in shared-standards).
 
-**`standards` command (FACT):** resolve profile (from `--profile` or the
-manifest's `standards_profile`) → `StandardsProfileResolver.resolve()` →
-print applicable domains.
+Note: README and `src/project_init/README.md` describe the CLI as `init` / `list-types`
+(and mention `update`); the actual `cli.py` exposes `init`, `list-types`, and `standards`.
+Trust the source — `update` is not implemented.
 
-**`init` command (FACT, partial):** load manifest → `ForgeAdapter` merges
-modules into the structures document → invoke `fastapi-app-generator` CLI →
-report count. Full multi-concern scaffolding (`init`/`update` merge engine) is
-**planned** (ADR-001 §1, §4).
+## Data & external dependencies
 
-## Delegation boundary (FACT — ADR-002)
+- Input manifest: `.project-init.yaml` (parsed into `ProjectManifest`).
+- Bundled data: `profiles/standards-profiles.yaml`, `profiles/domains.yaml`,
+  `templates/fastapi/structures.yaml` (resolved relative to the repo root by `cli.py`).
+- External repos consumed (per README / ADRs): `chrysa/shared-standards` (standards,
+  templates, hooks), `fastapi-app-generator` / forge engines (rendering), plus
+  `chrysa/chrysa-lib` quality-gate (test dependency via git+ssh).
+- No network services or databases at runtime; it is a filesystem-oriented CLI.
 
-The "fatal hypothesis" is that the published forge/CI/hook tools are stable and
-complete enough to delegate to without post-patching their output. The
-**kill-test** measures files `project-init` must overwrite after a tool runs to
-reach `make ci` green; threshold is post-patch count > 0 on tool-owned files.
-The **validation gate** proves the boundary on `python-fastapi` first, before a
-general engine. Evidence lives in `tests/e2e-scenarios.md`.
+## Build & test
 
-## Integrations (FACT)
+Tests run in-container (host virtualenvs are forbidden by standard). Real commands:
 
-- MCP servers declared in `.mcp.json` / `opencode.json`: GitHub and Notion
-  (via `@modelcontextprotocol/server-github`, `@notionhq/notion-mcp-server`),
-  both reading credentials from the environment.
-- Consumed ecosystem repos: `fastapi-app-generator`, `django-app-forge`,
-  `base-makefile`, `chrysa/github-actions`, `chrysa/pre-commit-tools`,
-  `chrysa-lib`, `chrysa/shared-standards` (ADR-002).
+- `make docker-test` — build `Dockerfile.test` and run pytest with coverage
+  (`--cov-fail-under=80`, emits `coverage.xml`).
+- `make test` — local unit tests (currently delegates to the container flow).
+- `make lint` — Ruff via pre-commit.
+- `make format` / `make format-check` — Ruff format.
+- `make typecheck` — mypy (N/A — not yet wired; see issues).
+- `make build` — N/A — no build artefact target yet.
+- `make pre-commit` — run all pre-commit checks.
+- `make ci` — full local gate (lint + pre-commit + docker-test).
+- `make sync-standards-domains` / `make check-standards-domains` — regenerate / drift-check
+  `profiles/domains.yaml` against shared-standards.
+
+Coverage gate: 80% line coverage (`pyproject.toml`, `Dockerfile.test`).

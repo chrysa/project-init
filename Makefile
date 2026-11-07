@@ -35,7 +35,7 @@ test:
 	@echo "No tests yet — run docker-test for CI-compatible tests"
 
 docker-test: ## Run tests inside Docker (CI-compatible)
-	docker build -f Dockerfile.test -t project-init-test .
+	DOCKER_BUILDKIT=1 docker build --ssh default -f Dockerfile.test -t project-init-test .
 	docker run --rm project-init-test
 
 test-cov:

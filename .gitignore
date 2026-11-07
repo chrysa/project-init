@@ -65,3 +65,9 @@ sys
 .claude/state/
 .claude/worktrees/
 .claude/hooks/*-state.json
+
+# prism-ai-lint: keep secrets and local config out of git
+.env.*
+!.env.example
+secrets/
+CLAUDE.local.md
