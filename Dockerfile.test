@@ -17,6 +17,9 @@ RUN --mount=type=ssh pip install "chrysa-quality-gate @ git+ssh://git@github.com
 
 FROM deps AS test
 # Copy only necessary files to avoid inadvertently adding sensitive data
+# pyproject.toml carries [tool.coverage.run] (source + omit) and [tool.pytest];
+# without it coverage ignores the omit and measures modules it should skip.
+COPY pyproject.toml ./
 COPY scripts/ ./scripts/
 COPY src/ ./src/
 COPY templates/ ./templates/
