@@ -95,7 +95,7 @@ jobs:
                   project-key: chrysa_project-init
                   organization: chrysa
                   project-name: project-init
-                  sources: project_init
+                  sources: src/project_init
                   tests: tests
                   # Downloaded from the test-results-3.14 artifact into reports/
                   # by the action; matches sonar-scan-python's default path.
