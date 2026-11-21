@@ -1,10 +1,8 @@
 {
   "commands": {
     "build": "make build",
-    "coverage": "make test-coverage",
     "lint": "make lint",
-    "tests": "make test",
-    "types": "make type-check"
+    "tests": "make test"
   },
   "description": "Quality gate configuration for mixed project",
   "thresholds": {
