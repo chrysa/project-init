@@ -33,7 +33,10 @@ pythonpath = ["scripts", "src"]
 
 [tool.coverage.run]
 source = ["scripts", "src/project_init"]
-omit = ["tests/*", "scripts/__main__.py"]
+# scripts/quality_gate.py is the legacy local gate, being replaced by the
+# chrysa_quality_gate library (sc-5280/sc-5283); it is already excluded from ruff
+# and tested there, so it is omitted here rather than double-covered locally.
+omit = ["tests/*", "scripts/__main__.py", "scripts/quality_gate.py"]
 
 [tool.coverage.report]
 fail_under = 80
